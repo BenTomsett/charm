@@ -6,6 +6,7 @@ import Logo from "@/components/app/navbar/logo";
 import NavbarMenu from "@/components/app/navbar/menubar";
 import React from "react";
 import {TooltipProvider} from "@/components/ui/tooltip";
+import AboutDialog from "@/components/app/about-dialog";
 
 const Navbar = () => {
   return (
@@ -41,9 +42,7 @@ const Navbar = () => {
             <ThumbsUp className="h-4 w-4"/>
           </TooltipButton>
 
-          <TooltipButton variant="outline" size="icon" tooltipText="About chARM">
-            <Info className="h-4 w-4"/>
-          </TooltipButton>
+          <AboutDialog />
         </div>
       </TooltipProvider>
     </nav>
