@@ -7,6 +7,7 @@ import NavbarMenu from '@/components/app/navbar/menubar';
 import React from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import AboutDialog from '@/components/app/about-dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Navbar = () => {
   return (
@@ -36,8 +37,14 @@ const Navbar = () => {
             <ChevronRight className="h-4 w-4" />
           </TooltipButton>
         </div>
-
         <div className="flex gap-2">
+          <Tabs defaultValue="hex">
+            <TabsList>
+              <TabsTrigger value="hex">Hex</TabsTrigger>
+              <TabsTrigger value="bin">Bin</TabsTrigger>
+              <TabsTrigger value="dec">Dec</TabsTrigger>
+            </TabsList>
+          </Tabs>
           <TooltipButton variant="outline" size="icon" tooltipText="Send feedback">
             <ThumbsUp className="h-4 w-4" />
           </TooltipButton>

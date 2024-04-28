@@ -3,6 +3,7 @@
 import { useLayoutEffect, useState } from 'react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import CodeEditor from '@/components/app/editor/editor';
+import EmulatorPanel from '@/components/app/emulator-panel';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -33,7 +34,9 @@ export default function Home() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={30} minSize={20}>
-        <div className="h-full rounded-md bg-white p-4">Registers here</div>
+        <div className="h-full rounded-md bg-white p-4">
+          <EmulatorPanel />
+        </div>
       </ResizablePanel>
     </ResizablePanelGroup>
   );
