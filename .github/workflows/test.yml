@@ -11,6 +11,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Enable corepack
+      run: corepack enable
     - name: Install dependencies
       run: yarn
     - name: Run tests
@@ -21,6 +23,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Enable corepack
+      run: corepack enable
     - name: Install dependencies
       run: yarn
     - name: Run tests
@@ -34,7 +38,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Vercel CLI
-      run: npm install --global vercel@latest
+      run: yarn add --global vercel@latest
     - name: Pull Vercel secrets
       run: vercel pull --yes --environment:production --token=${{ secrets.VERCEL_TOKEN }}
     - name: Build artifacts
