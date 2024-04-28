@@ -37,12 +37,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install Vercel CLI
-      run: yarn add --global vercel@latest
+    - name: Enable corepack
+      run: corepack enable
     - name: Pull Vercel secrets
-      run: vercel pull --yes --environment:production --token=${{ secrets.VERCEL_TOKEN }}
+      run: yarn dlx vercel@latest pull --yes --environment:production --token=${{ secrets.VERCEL_TOKEN }}
     - name: Build artifacts
-      run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      run: yarn dlx vercel@latest build --prod --token=${{ secrets.VERCEL_TOKEN }}
     - name: Deploy to Vercel
-      run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      run: yarn dlx vercel@latest deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
 
