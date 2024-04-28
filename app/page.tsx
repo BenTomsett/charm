@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import {useLayoutEffect, useState} from "react";
-import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import CodeEditor from "@/components/app/editor/editor";
+import { useLayoutEffect, useState } from 'react';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import CodeEditor from '@/components/app/editor/editor';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -10,7 +10,7 @@ const useWindowSize = () => {
   useLayoutEffect(() => {
     const updateSize = () => {
       setSize([window.innerWidth, window.innerHeight]);
-    }
+    };
 
     window.addEventListener('resize', updateSize);
     updateSize();
@@ -27,15 +27,13 @@ export default function Home() {
   return (
     <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>
       <ResizablePanel defaultSize={70} minSize={60}>
-        <div className="bg-white overflow-hidden rounded-md h-full">
+        <div className="h-full overflow-hidden rounded-md bg-white">
           <CodeEditor />
         </div>
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={30} minSize={20}>
-        <div className="bg-white rounded-md p-4 h-full">
-          Registers here
-        </div>
+        <div className="h-full rounded-md bg-white p-4">Registers here</div>
       </ResizablePanel>
     </ResizablePanelGroup>
   );
