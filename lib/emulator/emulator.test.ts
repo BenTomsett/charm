@@ -26,13 +26,64 @@ describe('Emulator', () => {
     expect(emulator.getFlag('zero')).toBe(false);
   });
 
-  it('should load and execute an instruction', () => {
+  it('should be able to execute an instruction', () => {
     const instruction: Instruction = {
       opcode: 'ADD',
       execute: jest.fn(),
     };
-    emulator.loadInstruction(instruction);
+    emulator.executeInstruction(instruction);
     expect(instruction.execute).toHaveBeenCalledWith(emulator);
+  });
+
+  it('should return the current state of the emulator', () => {
+    const state = emulator.getEmulatorState();
+    expect(state).toEqual({
+      registers: {
+        R0: 0,
+        R1: 0,
+        R2: 0,
+        R3: 0,
+        R4: 0,
+        R5: 0,
+        R6: 0,
+        R7: 0,
+        R8: 0,
+        R9: 0,
+        R10: 0,
+        R11: 0,
+        R12: 0,
+        R13: 0,
+        R14: 0,
+        R15: 0,
+      },
+      memory: new Uint8Array(1024),
+      flags: {
+        zero: false,
+        negative: false,
+        carry: false,
+        overflow: false,
+      },
+    });
+  });
+
+  it('should reflect changes in the emulator state', () => {
+    emulator.setRegister('R1', 10);
+    emulator.setFlag('zero', true);
+    emulator.setMemory(0, 10);
+    const state = emulator.getEmulatorState();
+    expect(state.registers.R1).toBe(10);
+    expect(state.flags.zero).toBe(true);
+    expect(state.memory[0]).toBe(10);
+  });
+
+  it('should not allow direct modifications to the state', () => {
+    const state = emulator.getEmulatorState();
+    state.registers.R1 = 20;
+    state.flags.zero = false;
+    state.memory[0] = 20;
+    expect(emulator.getRegister('R1')).toBe(0);
+    expect(emulator.getFlag('zero')).toBe(false);
+    expect(emulator.getMemory(0)).toBe(0);
   });
 
   it('should set and get a flag', () => {

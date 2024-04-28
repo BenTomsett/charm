@@ -9,6 +9,7 @@ import { editor } from 'monaco-editor';
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import { execute } from '@/app/actions';
 import { useToast } from '@/components/ui/use-toast';
+import { defaultState } from '@/lib/emulator/emulator';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -28,6 +29,7 @@ const useWindowSize = () => {
 };
 
 export default function Home() {
+  const [emulatorState, setEmulatorState] = useState(defaultState);
   const [width] = useWindowSize();
   const editorRef: React.MutableRefObject<IStandaloneCodeEditor | null> = useRef(null);
   const { toast } = useToast();
@@ -38,6 +40,7 @@ export default function Home() {
       const response = await execute(code);
       if (response.status === 200) {
         toast({ variant: 'success', title: 'Success', description: 'Code executed successfully' });
+        setEmulatorState(response.state!);
       } else {
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to execute code' });
       }
@@ -61,7 +64,7 @@ export default function Home() {
           <ResizableHandle />
           <ResizablePanel defaultSize={30} minSize={20}>
             <div className="h-full rounded-md bg-white p-4">
-              <EmulatorPanel />
+              <EmulatorPanel emulatorState={emulatorState} />
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

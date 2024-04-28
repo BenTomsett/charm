@@ -1,8 +1,36 @@
 import { Instruction } from '@/lib/emulator';
 import { InvalidFlagError, InvalidMemoryError, InvalidRegisterError } from '@/lib/emulator/errors';
 
+export const defaultState = {
+  registers: {
+    R0: 0,
+    R1: 0,
+    R2: 0,
+    R3: 0,
+    R4: 0,
+    R5: 0,
+    R6: 0,
+    R7: 0,
+    R8: 0,
+    R9: 0,
+    R10: 0,
+    R11: 0,
+    R12: 0,
+    R13: 0,
+    R14: 0,
+    R15: 0,
+  },
+  memory: new Uint8Array(1024),
+  flags: {
+    zero: false,
+    negative: false,
+    carry: false,
+    overflow: false,
+  },
+};
+
 class Emulator {
-  private readonly registers: Record<string, number>;
+  private readonly registers: typeof defaultState.registers;
   private readonly memory: Uint8Array;
   private readonly flags: {
     zero: boolean;
@@ -12,31 +40,9 @@ class Emulator {
   };
 
   constructor(memorySize: number = 1024) {
-    this.registers = {
-      R0: 0,
-      R1: 0,
-      R2: 0,
-      R3: 0,
-      R4: 0,
-      R5: 0,
-      R6: 0,
-      R7: 0,
-      R8: 0,
-      R9: 0,
-      R10: 0,
-      R11: 0,
-      R12: 0,
-      R13: 0,
-      R14: 0,
-      R15: 0,
-    };
+    this.registers = { ...defaultState.registers };
     this.memory = new Uint8Array(memorySize);
-    this.flags = {
-      zero: false,
-      negative: false,
-      carry: false,
-      overflow: false,
-    };
+    this.flags = { ...defaultState.flags };
   }
 
   reset() {
@@ -45,8 +51,17 @@ class Emulator {
     this.memory.fill(0);
   }
 
-  loadInstruction(instruction: Instruction) {
+  executeInstruction(instruction: Instruction) {
     instruction.execute(this);
+    return this.getEmulatorState();
+  }
+
+  getEmulatorState() {
+    return {
+      registers: { ...this.registers },
+      memory: new Uint8Array(this.memory),
+      flags: { ...this.flags },
+    };
   }
 
   setFlag(flag: string, value: boolean) {

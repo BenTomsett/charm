@@ -1,33 +1,37 @@
 'use client';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { FC } from 'react';
 
 interface Register {
   name: string;
-  valueHex: string;
   label?: string;
 }
 
 const registers: Register[] = [
-  { name: 'R0', valueHex: '0x0000' },
-  { name: 'R1', valueHex: '0x0000' },
-  { name: 'R2', valueHex: '0x0000' },
-  { name: 'R3', valueHex: '0x0000' },
-  { name: 'R4', valueHex: '0x0000' },
-  { name: 'R5', valueHex: '0x0000' },
-  { name: 'R6', valueHex: '0x0000' },
-  { name: 'R7', valueHex: '0x0000' },
-  { name: 'R8', valueHex: '0x0000' },
-  { name: 'R9', valueHex: '0x0000' },
-  { name: 'R10', valueHex: '0x0000' },
-  { name: 'R11', valueHex: '0x0000' },
-  { name: 'R12', valueHex: '0x0000' },
-  { name: 'R13', valueHex: '0x0000', label: 'Stack Pointer (SP)' },
-  { name: 'R14', valueHex: '0x0000', label: 'Link Register (LR)' },
-  { name: 'R15', valueHex: '0x0000', label: 'Program Counter (PC)' },
+  { name: 'R0' },
+  { name: 'R1' },
+  { name: 'R2' },
+  { name: 'R3' },
+  { name: 'R4' },
+  { name: 'R5' },
+  { name: 'R6' },
+  { name: 'R7' },
+  { name: 'R8' },
+  { name: 'R9' },
+  { name: 'R10' },
+  { name: 'R11' },
+  { name: 'R12' },
+  { name: 'R13', label: 'Stack Pointer (SP)' },
+  { name: 'R14', label: 'Link Register (LR)' },
+  { name: 'R15', label: 'Program Counter (PC)' },
 ];
 
-const Registers = () => {
+interface RegistersProps {
+  registersState: Record<string, number>;
+}
+
+const Registers: FC<RegistersProps> = ({ registersState }) => {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="font-mono">
@@ -43,7 +47,7 @@ const Registers = () => {
               <TooltipContent side="right">
                 <span className="text-sm">{register.label || 'Data register'}</span>
               </TooltipContent>
-              <span className="">{register.valueHex}</span>
+              <span className="">{registersState[register.name]}</span>
             </Tooltip>
           </div>
         ))}

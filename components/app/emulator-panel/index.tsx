@@ -1,8 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Registers from '@/components/app/emulator-panel/registers';
 import Memory from '@/components/app/emulator-panel/memory';
+import { defaultState } from '@/lib/emulator/emulator';
+import { FC } from 'react';
 
-const EmulatorPanel = () => {
+interface EmulatorPanelProps {
+  emulatorState: typeof defaultState;
+}
+
+const EmulatorPanel: FC<EmulatorPanelProps> = ({ emulatorState }) => {
   return (
     <div>
       <Tabs defaultValue="registers">
@@ -11,7 +17,7 @@ const EmulatorPanel = () => {
           <TabsTrigger value="memory">Memory</TabsTrigger>
         </TabsList>
         <TabsContent value="registers">
-          <Registers />
+          <Registers registersState={emulatorState.registers} />
         </TabsContent>
         <TabsContent value="memory">
           <Memory />
