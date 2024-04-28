@@ -1,10 +1,16 @@
-import { Instruction } from '@/lib/emulator';
-import { InvalidFlagError, InvalidMemoryError, InvalidRegisterError } from '@/lib/emulator/errors';
+import Instruction from '@/lib/emulator/instruction';
+import {
+  InvalidFlagError,
+  InvalidMemoryError,
+  InvalidRegisterError,
+  SyntaxError,
+} from '@/lib/emulator/errors';
+import { InstructionFactory } from '@/lib/emulator/instruction-factory';
 
 export const defaultState = {
   registers: {
-    R0: 0,
-    R1: 0,
+    R0: 5,
+    R1: 3,
     R2: 0,
     R3: 0,
     R4: 0,
@@ -49,6 +55,21 @@ class Emulator {
     Object.keys(this.registers).forEach((reg) => (this.registers[reg] = 0));
     Object.keys(this.flags).forEach((flag) => (this.flags[flag] = false));
     this.memory.fill(0);
+  }
+
+  executeProgram(program: string): (typeof defaultState)[] {
+    const lines = program.split('\n');
+    const states: (typeof defaultState)[] = [];
+    lines.forEach((line) => {
+      const instruction = InstructionFactory.create(line);
+      if (instruction) {
+        states.push(this.executeInstruction(instruction));
+      } else {
+        throw new SyntaxError(line);
+      }
+    });
+
+    return states;
   }
 
   executeInstruction(instruction: Instruction) {

@@ -1,18 +1,14 @@
 'use server';
 
 import Emulator from '@/lib/emulator';
-import { AddInstruction } from '@/lib/emulator/instructions';
+import { defaultState } from '@/lib/emulator/emulator';
 
 export async function execute(code: string) {
   const emulator = new Emulator();
-  emulator.setRegister('R0', 5);
-  emulator.setRegister('R1', 3);
-  const addInstruction = new AddInstruction('R2', 'R0', 'R1');
-  const state = emulator.executeInstruction(addInstruction);
+  const state = emulator.executeProgram(code);
+  return state[state.length - 1];
+}
 
-  if (code === 'success') {
-    return { status: 200, state };
-  } else {
-    return { status: 400 };
-  }
+export async function reset() {
+  return defaultState;
 }

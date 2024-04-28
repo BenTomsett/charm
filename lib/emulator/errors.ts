@@ -21,3 +21,11 @@ export class InvalidFlagError extends Error {
     this.name = 'InvalidFlagError';
   }
 }
+
+export class SyntaxError extends Error {
+  constructor(line: string) {
+    super(`Syntax error on line: ${line}`);
+
+    this.name = 'SyntaxError';
+  }
+}

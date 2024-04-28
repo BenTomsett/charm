@@ -1,7 +1,9 @@
-import Emulator, { Instruction } from '@/lib/emulator';
+import Emulator from '@/lib/emulator';
+import Instruction from '@/lib/emulator/instruction';
 
 class AddInstruction extends Instruction {
-  opcode = 'ADD';
+  static opcode = 'ADD';
+  static args = 3;
 
   constructor(
     public dest: string,

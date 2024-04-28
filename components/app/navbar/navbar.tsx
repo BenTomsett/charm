@@ -10,10 +10,11 @@ import AboutDialog from '@/components/app/about-dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface NavbarProps {
-  onSubmit: () => void;
+  onExecute: () => void;
+  onReset: () => void;
 }
 
-const Navbar: FC<NavbarProps> = ({ onSubmit }) => {
+const Navbar: FC<NavbarProps> = ({ onExecute, onReset }) => {
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
@@ -24,11 +25,16 @@ const Navbar: FC<NavbarProps> = ({ onSubmit }) => {
 
       <TooltipProvider delayDuration={0}>
         <div className="flex gap-2">
-          <TooltipButton variant="outline" size="icon" tooltipText="Reset emulator">
+          <TooltipButton
+            variant="outline"
+            size="icon"
+            tooltipText="Reset emulator"
+            onClick={onReset}
+          >
             <RotateCcw className="h-4 w-4" />
           </TooltipButton>
 
-          <Button onClick={onSubmit}>
+          <Button onClick={onExecute}>
             <Play className="mr-2 h-4 w-4" />
             Run
           </Button>
