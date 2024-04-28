@@ -1,15 +1,19 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Info, Play, RotateCcw, ThumbsUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, RotateCcw, ThumbsUp } from 'lucide-react';
 import { Button, TooltipButton } from '@/components/ui/button';
 import Logo from '@/components/app/navbar/logo';
 import NavbarMenu from '@/components/app/navbar/menubar';
-import React from 'react';
+import React, { FC } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import AboutDialog from '@/components/app/about-dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const Navbar = () => {
+interface NavbarProps {
+  onSubmit: () => void;
+}
+
+const Navbar: FC<NavbarProps> = ({ onSubmit }) => {
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
@@ -24,7 +28,7 @@ const Navbar = () => {
             <RotateCcw className="h-4 w-4" />
           </TooltipButton>
 
-          <Button>
+          <Button onClick={onSubmit}>
             <Play className="mr-2 h-4 w-4" />
             Run
           </Button>
