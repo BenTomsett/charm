@@ -1,7 +1,6 @@
 'use server';
 
 import Emulator from '@/lib/emulator';
-import { defaultState } from '@/lib/emulator/emulator';
 
 export async function execute(code: string) {
   const emulator = new Emulator();
@@ -10,5 +9,6 @@ export async function execute(code: string) {
 }
 
 export async function reset() {
-  return defaultState;
+  const emulator = new Emulator();
+  return emulator.getEmulatorState();
 }

@@ -12,9 +12,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 interface NavbarProps {
   onExecute: () => void;
   onReset: () => void;
+  onDisplayBaseChange: (base: 'hex' | 'dec' | 'bin') => void;
 }
 
-const Navbar: FC<NavbarProps> = ({ onExecute, onReset }) => {
+const Navbar: FC<NavbarProps> = ({ onExecute, onReset, onDisplayBaseChange }) => {
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
@@ -48,7 +49,7 @@ const Navbar: FC<NavbarProps> = ({ onExecute, onReset }) => {
           </TooltipButton>
         </div>
         <div className="flex gap-2">
-          <Tabs defaultValue="hex">
+          <Tabs defaultValue="hex" onValueChange={onDisplayBaseChange}>
             <TabsList>
               <TabsTrigger value="hex">Hex</TabsTrigger>
               <TabsTrigger value="bin">Bin</TabsTrigger>

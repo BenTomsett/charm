@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import EmulatorPanel from '@/components/app/emulator-panel';
@@ -9,7 +9,7 @@ import { editor } from 'monaco-editor';
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import { execute, reset } from '@/app/actions';
 import { useToast } from '@/components/ui/use-toast';
-import { defaultState } from '@/lib/emulator/emulator';
+import Emulator from '@/lib/emulator';
 
 const useWindowSize = () => {
   const [size, setSize] = useState([0, 0]);
@@ -29,10 +29,13 @@ const useWindowSize = () => {
 };
 
 export default function Home() {
-  const [emulatorState, setEmulatorState] = useState(defaultState);
-  const [width] = useWindowSize();
-  const editorRef: React.MutableRefObject<IStandaloneCodeEditor | null> = useRef(null);
   const { toast } = useToast();
+  const [width] = useWindowSize();
+
+  const [emulatorState, setEmulatorState] = useState(new Emulator().getEmulatorState());
+  const [displayBase, setDisplayBase] = useState<'hex' | 'bin' | 'dec'>('hex');
+
+  const editorRef: React.MutableRefObject<IStandaloneCodeEditor | null> = useRef(null);
 
   const onExecute = async () => {
     if (editorRef.current !== null) {
@@ -51,7 +54,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar onExecute={onExecute} onReset={onReset} />
+      <Navbar onExecute={onExecute} onReset={onReset} onDisplayBaseChange={setDisplayBase} />
       <main className="flex-1 bg-gray-100 p-4">
         <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>
           <ResizablePanel defaultSize={70} minSize={60}>
@@ -66,7 +69,7 @@ export default function Home() {
           <ResizableHandle />
           <ResizablePanel defaultSize={30} minSize={20}>
             <div className="h-full rounded-md bg-white p-4">
-              <EmulatorPanel emulatorState={emulatorState} />
+              <EmulatorPanel emulatorState={emulatorState} displayBase={displayBase} />
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

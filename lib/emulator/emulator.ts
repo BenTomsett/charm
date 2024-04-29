@@ -6,8 +6,20 @@ import {
   SyntaxError,
 } from '@/lib/emulator/errors';
 import { InstructionFactory } from '@/lib/emulator/instruction-factory';
+import registers from '@/components/app/emulator-panel/registers';
 
-export const defaultState = {
+export interface EmulatorState {
+  registers: Record<string, number>;
+  memory: Uint8Array;
+  flags: {
+    zero: boolean;
+    negative: boolean;
+    carry: boolean;
+    overflow: boolean;
+  };
+}
+
+const defaultState: EmulatorState = {
   registers: {
     R0: 5,
     R1: 3,
@@ -36,14 +48,9 @@ export const defaultState = {
 };
 
 class Emulator {
-  private readonly registers: typeof defaultState.registers;
-  private readonly memory: Uint8Array;
-  private readonly flags: {
-    zero: boolean;
-    negative: boolean;
-    carry: boolean;
-    overflow: boolean;
-  };
+  private readonly registers: EmulatorState['registers'];
+  private readonly memory: EmulatorState['memory'];
+  private readonly flags: EmulatorState['flags'];
 
   constructor(memorySize: number = 1024) {
     this.registers = { ...defaultState.registers };
@@ -57,9 +64,9 @@ class Emulator {
     this.memory.fill(0);
   }
 
-  executeProgram(program: string): (typeof defaultState)[] {
+  executeProgram(program: string): EmulatorState[] {
     const lines = program.split('\n');
-    const states: (typeof defaultState)[] = [];
+    const states: EmulatorState[] = [];
     lines.forEach((line) => {
       const instruction = InstructionFactory.create(line);
       if (instruction) {
