@@ -11,20 +11,18 @@ interface EmulatorPanelProps {
 
 const EmulatorPanel: FC<EmulatorPanelProps> = ({ emulatorState, displayBase }) => {
   return (
-    <div>
-      <Tabs defaultValue="registers">
-        <TabsList className="w-full">
-          <TabsTrigger value="registers">Registers</TabsTrigger>
-          <TabsTrigger value="memory">Memory</TabsTrigger>
-        </TabsList>
-        <TabsContent value="registers">
-          <Registers registersState={emulatorState.registers} displayBase={displayBase} />
-        </TabsContent>
-        <TabsContent value="memory">
-          <Memory />
-        </TabsContent>
-      </Tabs>
-    </div>
+    <Tabs defaultValue="registers">
+      <TabsList className="w-full">
+        <TabsTrigger value="registers">Registers</TabsTrigger>
+        <TabsTrigger value="memory">Memory</TabsTrigger>
+      </TabsList>
+      <TabsContent value="registers">
+        <Registers registersState={emulatorState.registers} displayBase={displayBase} />
+      </TabsContent>
+      <TabsContent value="memory">
+        <Memory />
+      </TabsContent>
+    </Tabs>
   );
 };
 

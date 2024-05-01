@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import EmulatorPanel from '@/components/app/emulator-panel';
@@ -51,7 +51,7 @@ export default function Home() {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={30} minSize={20}>
-            <div className="h-full rounded-md bg-white p-4">
+            <div className="h-full overflow-y-scroll rounded-md bg-white p-4">
               <EmulatorPanel emulatorState={emulatorState} displayBase={displayBase} />
             </div>
           </ResizablePanel>
