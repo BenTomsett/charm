@@ -2,12 +2,18 @@ import Instruction from '@/lib/emulator/instruction';
 import AddInstruction from '@/lib/emulator/instructions/add';
 import MovInstruction from '@/lib/emulator/instructions/mov';
 import SubInstruction from '@/lib/emulator/instructions/sub';
+import AndInstruction from '@/lib/emulator/instructions/and';
+import OrrInstruction from '@/lib/emulator/instructions/orr';
+import EorInstruction from '@/lib/emulator/instructions/eor';
 
 type InstructionFactory = (args: string[]) => Instruction;
 const instructionLookup: { [key: string]: InstructionFactory } = {
   [AddInstruction.opcode]: AddInstruction.create,
   [SubInstruction.opcode]: SubInstruction.create,
   [MovInstruction.opcode]: MovInstruction.create,
+  [AndInstruction.opcode]: AndInstruction.create,
+  [OrrInstruction.opcode]: OrrInstruction.create,
+  [EorInstruction.opcode]: EorInstruction.create,
 };
 
 export const createInstruction = (line: string): Instruction | null => {
