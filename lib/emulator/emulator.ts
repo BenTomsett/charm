@@ -100,6 +100,8 @@ class Emulator {
   }
 
   getRegister(register: string) {
+    register = register.toUpperCase();
+
     if (!(register in this.registers)) {
       throw new InvalidRegisterError(register);
     }
@@ -108,6 +110,8 @@ class Emulator {
   }
 
   setRegister(register: string, value: number) {
+    register = register.toUpperCase();
+
     if (!(register in this.registers)) {
       throw new InvalidRegisterError(register);
     }
