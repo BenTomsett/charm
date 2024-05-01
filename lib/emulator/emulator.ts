@@ -5,7 +5,7 @@ import {
   InvalidRegisterError,
   SyntaxError,
 } from '@/lib/emulator/errors';
-import { InstructionFactory } from '@/lib/emulator/instruction-factory';
+import { createInstruction } from '@/lib/emulator/instruction-factory';
 
 export interface EmulatorState {
   registers: Record<string, number>;
@@ -53,7 +53,7 @@ class Emulator {
     const lines = program.split('\n');
     const states: EmulatorState[] = [];
     lines.forEach((line) => {
-      const instruction = InstructionFactory.create(line);
+      const instruction = createInstruction(line);
       if (instruction) {
         states.push(this.executeInstruction(instruction));
       } else {

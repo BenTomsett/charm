@@ -1,5 +1,6 @@
 import Emulator from '@/lib/emulator';
 import Instruction from '@/lib/emulator/instruction';
+import { ArgumentError } from '@/lib/emulator/errors';
 
 class AddInstruction extends Instruction {
   static opcode = 'ADD';
@@ -14,8 +15,10 @@ class AddInstruction extends Instruction {
   }
 
   static create(args: string[]): AddInstruction {
-    if (args.length !== this.argCount) {
-      throw new Error(`ADD instruction must have exactly ${this.argCount} argument(s)`);
+    if (args.length !== AddInstruction.argCount) {
+      throw new ArgumentError(
+        `ADD instruction must have exactly ${AddInstruction.argCount} argument(s)`
+      );
     }
 
     return new AddInstruction(args[0], args[1], args[2]);

@@ -14,8 +14,9 @@ class MovInstruction extends Instruction {
   }
 
   static create(args: string[]): MovInstruction {
-    if (args.length !== this.argCount) {
-      throw new Error(`MOV instruction must have exactly ${this.argCount} arguments`);
+    console.log(args);
+    if (args.length !== MovInstruction.argCount) {
+      throw new Error(`MOV instruction must have exactly ${MovInstruction.argCount} arguments`);
     }
 
     return new MovInstruction(args[0], args[1]);
