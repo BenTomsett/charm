@@ -4,6 +4,10 @@ abstract class Instruction {
   public static opcode: string;
   public static args: number;
   public abstract execute(emulator: Emulator): void;
+
+  static create(args: string[]): Instruction {
+    throw new Error('Cannot create an abstract instruction');
+  }
 }
 
 export default Instruction;

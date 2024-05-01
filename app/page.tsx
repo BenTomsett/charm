@@ -10,23 +10,7 @@ import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import { execute, reset } from '@/app/actions';
 import { useToast } from '@/components/ui/use-toast';
 import Emulator from '@/lib/emulator';
-
-const useWindowSize = () => {
-  const [size, setSize] = useState([0, 0]);
-
-  useLayoutEffect(() => {
-    const updateSize = () => {
-      setSize([window.innerWidth, window.innerHeight]);
-    };
-
-    window.addEventListener('resize', updateSize);
-    updateSize();
-
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-
-  return size;
-};
+import { useWindowSize } from '@/lib/hooks/use-window-size';
 
 export default function Home() {
   const { toast } = useToast();
@@ -41,7 +25,6 @@ export default function Home() {
     if (editorRef.current !== null) {
       const code = editorRef.current.getValue();
       const newState = await execute(code);
-      console.log(newState);
       setEmulatorState(newState);
     }
   };

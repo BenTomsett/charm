@@ -1,5 +1,3 @@
-'use server';
-
 import Emulator from '@/lib/emulator';
 
 export async function execute(code: string) {

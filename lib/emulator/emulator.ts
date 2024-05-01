@@ -6,7 +6,6 @@ import {
   SyntaxError,
 } from '@/lib/emulator/errors';
 import { InstructionFactory } from '@/lib/emulator/instruction-factory';
-import registers from '@/components/app/emulator-panel/registers';
 
 export interface EmulatorState {
   registers: Record<string, number>;
@@ -20,24 +19,10 @@ export interface EmulatorState {
 }
 
 const defaultState: EmulatorState = {
-  registers: {
-    R0: 5,
-    R1: 3,
-    R2: 0,
-    R3: 0,
-    R4: 0,
-    R5: 0,
-    R6: 0,
-    R7: 0,
-    R8: 0,
-    R9: 0,
-    R10: 0,
-    R11: 0,
-    R12: 0,
-    R13: 0,
-    R14: 0,
-    R15: 0,
-  },
+  registers: Array.from({ length: 16 }, (_, i) => `R${i}`).reduce(
+    (acc, curr) => ({ ...acc, [curr]: 0 }),
+    {}
+  ),
   memory: new Uint8Array(1024),
   flags: {
     zero: false,

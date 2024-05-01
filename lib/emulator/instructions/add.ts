@@ -3,7 +3,7 @@ import Instruction from '@/lib/emulator/instruction';
 
 class AddInstruction extends Instruction {
   static opcode = 'ADD';
-  static args = 3;
+  static argCount = 3;
 
   constructor(
     public dest: string,
@@ -11,6 +11,14 @@ class AddInstruction extends Instruction {
     public src2: string
   ) {
     super();
+  }
+
+  static create(args: string[]): AddInstruction {
+    if (args.length !== this.argCount) {
+      throw new Error(`ADD instruction must have exactly ${this.argCount} argument(s)`);
+    }
+
+    return new AddInstruction(args[0], args[1], args[2]);
   }
 
   execute(emulator: Emulator): void {
