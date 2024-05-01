@@ -53,7 +53,13 @@ class Emulator {
     const lines = program.split('\n');
     const states: EmulatorState[] = [];
     lines.forEach((line) => {
-      const instruction = createInstruction(line);
+      if (line.trim().startsWith(';') || line.trim() === '') {
+        // Ignore comments and blank lines
+        return;
+      }
+      // Remove comments
+      const sanitizedLine = line.split(';')[0].trim();
+      const instruction = createInstruction(sanitizedLine);
       if (instruction) {
         states.push(this.executeInstruction(instruction));
       } else {
