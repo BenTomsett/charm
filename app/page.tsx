@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import Editor from '@monaco-editor/react';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import EmulatorPanel from '@/components/app/emulator-panel';
-import Navbar from '@/components/app/navbar/navbar';
-import { editor } from 'monaco-editor';
-import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
+
 import { execute, reset } from '@/app/actions';
+
+import Editor from '@monaco-editor/react';
+
+import Navbar from '@/components/app/navbar/navbar';
+import EmulatorPanel from '@/components/app/emulator-panel';
 import { useToast } from '@/components/ui/use-toast';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+
 import Emulator from '@/lib/emulator';
 import { useWindowSize } from '@/lib/hooks/use-window-size';
+import { editor } from 'monaco-editor';
 
 export default function Home() {
   const { toast } = useToast();
@@ -19,7 +22,22 @@ export default function Home() {
   const [emulatorState, setEmulatorState] = useState(new Emulator().getEmulatorState());
   const [displayBase, setDisplayBase] = useState<'hex' | 'bin' | 'dec'>('hex');
 
-  const editorRef: React.MutableRefObject<IStandaloneCodeEditor | null> = useRef(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+
+  const handleEditorDidMount = async (e: editor.IStandaloneCodeEditor) => {
+    if (editorRef.current === null) {
+      editorRef.current = e;
+
+      const monaco = await import('monaco-editor');
+
+      editorRef.current.addAction({
+        id: 'execute',
+        label: 'Run program',
+        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+        run: onExecute,
+      });
+    }
+  };
 
   const onExecute = async () => {
     if (editorRef.current !== null) {
@@ -42,11 +60,7 @@ export default function Home() {
         <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>
           <ResizablePanel defaultSize={70} minSize={60}>
             <div className="h-full overflow-hidden rounded-md bg-white">
-              <Editor
-                onMount={(editor) => {
-                  editorRef.current = editor;
-                }}
-              />
+              <Editor onMount={handleEditorDidMount} />
             </div>
           </ResizablePanel>
           <ResizableHandle />
