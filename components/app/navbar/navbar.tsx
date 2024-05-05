@@ -15,6 +15,8 @@ interface NavbarProps {
   onStepBack: () => void;
   onReset: () => void;
   onDisplayBaseChange: (base: 'hex' | 'dec' | 'bin') => void;
+  processed: boolean;
+  executing: boolean;
 }
 
 const Navbar: FC<NavbarProps> = ({
@@ -23,13 +25,42 @@ const Navbar: FC<NavbarProps> = ({
   onStepBack,
   onReset,
   onDisplayBaseChange,
+  processed,
+  executing,
 }) => {
+  // TODO: This could be improved
+  const statusText = () => {
+    if (executing) {
+      return 'Stepping...';
+    }
+    if (processed && !executing) {
+      return 'Execution complete.';
+    }
+    return 'Emulator ready.';
+  };
+
+  const statusColour = () => {
+    if (executing) {
+      return 'bg-blue-200';
+    }
+    if (processed && !executing) {
+      return 'bg-green-200';
+    }
+    return 'bg-transparent';
+  };
+
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
         <Logo className="pr-4" />
         <div className="h-3/4 border-[0.5px] border-gray-200" />
         <NavbarMenu />
+      </div>
+
+      <div
+        className={`flex w-full max-w-[640px] items-center justify-center rounded-md border ${statusColour()}`}
+      >
+        {statusText()}
       </div>
 
       <TooltipProvider delayDuration={0}>
@@ -60,8 +91,6 @@ const Navbar: FC<NavbarProps> = ({
           >
             <ChevronRight className="h-4 w-4" />
           </TooltipButton>
-        </div>
-        <div className="flex gap-2">
           <Tabs defaultValue="hex" onValueChange={onDisplayBaseChange}>
             <TabsList>
               <TabsTrigger value="hex">Hex</TabsTrigger>

@@ -74,6 +74,7 @@ export default function Home() {
       setStatesIndex(newIndex);
 
       if (newIndex === 0) {
+        setProcessed(false);
         setExecuting(false);
       } else {
         setExecuting(true);
@@ -103,6 +104,8 @@ export default function Home() {
         onStepBack={onStepBack}
         onReset={onReset}
         onDisplayBaseChange={setDisplayBase}
+        processed={processed}
+        executing={executing}
       />
       <main className="flex-1 bg-gray-100 p-4">
         <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>
