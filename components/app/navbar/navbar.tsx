@@ -11,11 +11,19 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface NavbarProps {
   onExecute: () => void;
+  onStepForward: () => void;
+  onStepBack: () => void;
   onReset: () => void;
   onDisplayBaseChange: (base: 'hex' | 'dec' | 'bin') => void;
 }
 
-const Navbar: FC<NavbarProps> = ({ onExecute, onReset, onDisplayBaseChange }) => {
+const Navbar: FC<NavbarProps> = ({
+  onExecute,
+  onStepForward,
+  onStepBack,
+  onReset,
+  onDisplayBaseChange,
+}) => {
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
@@ -40,11 +48,16 @@ const Navbar: FC<NavbarProps> = ({ onExecute, onReset, onDisplayBaseChange }) =>
             Run
           </Button>
 
-          <TooltipButton variant="outline" size="icon" tooltipText="Step back">
+          <TooltipButton onClick={onStepBack} variant="outline" size="icon" tooltipText="Step back">
             <ChevronLeft className="h-4 w-4" />
           </TooltipButton>
 
-          <TooltipButton variant="outline" size="icon" tooltipText="Step forward">
+          <TooltipButton
+            onClick={onStepForward}
+            variant="outline"
+            size="icon"
+            tooltipText="Step forward"
+          >
             <ChevronRight className="h-4 w-4" />
           </TooltipButton>
         </div>

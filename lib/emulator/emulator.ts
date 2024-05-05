@@ -16,6 +16,7 @@ export interface EmulatorState {
     carry: boolean;
     overflow: boolean;
   };
+  line?: number;
 }
 
 const defaultState: EmulatorState = {
@@ -51,8 +52,8 @@ class Emulator {
 
   executeProgram(program: string): EmulatorState[] {
     const lines = program.split('\n');
-    const states: EmulatorState[] = [];
-    lines.forEach((line) => {
+    const states: EmulatorState[] = [defaultState];
+    lines.forEach((line, index) => {
       if (line.trim().startsWith(';') || line.trim() === '') {
         // Ignore comments and blank lines
         return;
@@ -61,12 +62,14 @@ class Emulator {
       const sanitizedLine = line.split(';')[0].trim();
       const instruction = createInstruction(sanitizedLine);
       if (instruction) {
-        states.push(this.executeInstruction(instruction));
+        states.push({
+          ...this.executeInstruction(instruction),
+          line: index,
+        });
       } else {
         throw new SyntaxError(line);
       }
     });
-
     return states;
   }
 
