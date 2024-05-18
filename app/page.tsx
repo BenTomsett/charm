@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useWindowSize } from '@/lib/hooks/use-window-size';
 
 import Navbar from '@/components/app/navbar/navbar';
 import EmulatorPanel from '@/components/app/emulator-panel';
@@ -9,90 +10,83 @@ import { useToast } from '@/components/ui/use-toast';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 import Emulator from '@/lib/emulator';
-import { useWindowSize } from '@/lib/hooks/use-window-size';
 
 import { editor } from 'monaco-editor';
 import MonacoEditor from '@/components/app/editor';
 
+enum EmulatorStatus {
+  Ready,
+  Processing,
+  Processed,
+  Executing,
+  Executed,
+  Error,
+}
+
 export default function Home() {
   const { toast } = useToast();
   const [width] = useWindowSize();
-
-  const [processed, setProcessed] = useState(false);
-  const [executing, setExecuting] = useState(false);
-  const [states, setStates] = useState([new Emulator().getEmulatorState()]);
-  const [statesIndex, setStatesIndex] = useState(0);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   const [displayBase, setDisplayBase] = useState<'hex' | 'bin' | 'dec'>('hex');
 
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const [status, setStatus] = useState(0);
+  const [emulator, setEmulator] = useState<Emulator>(new Emulator());
+  const [registers, setRegisters] = useState(emulator.getEmulatorState().registers);
+  const [memory, setMemory] = useState(emulator.getEmulatorState().memory);
+  const [symbols, setSymbols] = useState(emulator.getEmulatorState().symbols);
 
-  const process = () => {
-    const emulator = new Emulator();
-    const results = emulator.executeProgram(editorRef.current?.getValue() || '');
-    setStates(results);
-    setProcessed(true);
-    return results.length;
+  useEffect(() => {
+    const handleUpdate = () => {
+      console.log('Emulator state updated');
+      const state = emulator.getEmulatorState();
+      console.log({ oldState: registers, newState: state.registers });
+      setRegisters(state.registers);
+      console.log({ oldState: memory, newState: state.memory });
+      setMemory(state.memory);
+      console.log({ oldState: symbols, newState: state.symbols });
+      setSymbols(state.symbols);
+    };
+
+    emulator.subscribe(handleUpdate);
+
+    return () => {
+      emulator.unsubscribe(handleUpdate);
+    };
+  }, [emulator]);
+
+  const preprocess = () => {
+    setStatus(EmulatorStatus.Processing);
+    const program = editorRef.current?.getValue() || '';
+    emulator.preprocessProgram(program);
+    setStatus(EmulatorStatus.Processed);
   };
 
   const onExecute = () => {
-    setExecuting(true);
-    if (!processed) {
-      setStatesIndex(process() - 1);
-    } else {
-      const finalStateIndex = states.length - 1;
-      setStatesIndex(finalStateIndex);
+    if (status !== EmulatorStatus.Processed) {
+      preprocess();
     }
-    setExecuting(false);
+
+    emulator.execute();
   };
 
   const onStepForward = () => {
-    let statesLength = states.length;
-    if (!processed) {
-      statesLength = process();
-    }
-
-    if (statesIndex < statesLength - 1) {
-      const newIndex = statesIndex + 1;
-      setStatesIndex(newIndex);
-
-      if (newIndex === statesLength - 1) {
-        setExecuting(false);
-      } else {
-        setExecuting(true);
-      }
-    }
+    // TODO: re-implement
   };
 
   const onStepBack = () => {
-    if (statesIndex > 0) {
-      if (!processed) {
-        process();
-      }
-
-      const newIndex = statesIndex - 1;
-      setStatesIndex(newIndex);
-
-      if (newIndex === 0) {
-        setProcessed(false);
-        setExecuting(false);
-      } else {
-        setExecuting(true);
-      }
-    }
+    // TODO: re-implement
   };
 
   const onReset = async () => {
-    setStatesIndex(0);
-    setStates([new Emulator().getEmulatorState()]);
-    setProcessed(false);
-    setExecuting(false);
+    emulator.reset();
+    setStatus(EmulatorStatus.Ready);
     toast({ title: 'Success', description: 'Emulator reset' });
   };
 
   const onChange = () => {
-    if (processed) {
-      setProcessed(false);
+    if (status === EmulatorStatus.Processed) {
+      setStatus(EmulatorStatus.Ready);
     }
   };
 
@@ -104,8 +98,6 @@ export default function Home() {
         onStepBack={onStepBack}
         onReset={onReset}
         onDisplayBaseChange={setDisplayBase}
-        processed={processed}
-        executing={executing}
       />
       <main className="flex-1 bg-gray-100 p-4">
         <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>
@@ -114,7 +106,7 @@ export default function Home() {
               <MonacoEditor
                 editorRef={editorRef}
                 onExecute={onExecute}
-                executing={executing}
+                executing={false}
                 onChange={onChange}
               />
             </div>
@@ -122,7 +114,12 @@ export default function Home() {
           <ResizableHandle />
           <ResizablePanel defaultSize={30} minSize={20}>
             <div className="h-full overflow-y-scroll rounded-md bg-white p-4">
-              <EmulatorPanel emulatorState={states[statesIndex]} displayBase={displayBase} />
+              <EmulatorPanel
+                displayBase={displayBase}
+                registers={registers}
+                memory={memory}
+                symbols={symbols}
+              />
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

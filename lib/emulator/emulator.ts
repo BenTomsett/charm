@@ -1,107 +1,127 @@
-import Instruction from '@/lib/emulator/instruction';
-import {
-  InvalidFlagError,
-  InvalidMemoryError,
-  InvalidRegisterError,
-  SyntaxError,
-} from '@/lib/emulator/errors';
+import { InvalidMemoryError, InvalidRegisterError } from '@/lib/emulator/errors';
 import { createInstruction } from '@/lib/emulator/instruction-factory';
+import Instruction from '@/lib/emulator/instruction';
 
 export interface EmulatorState {
   registers: Record<string, number>;
   memory: Uint8Array;
-  flags: {
-    zero: boolean;
-    negative: boolean;
-    carry: boolean;
-    overflow: boolean;
-  };
-  line?: number;
+  symbols: Map<string, { address: number; lineIndex: number }>;
 }
 
-const defaultState: EmulatorState = {
+export const defaultEmulatorState = {
   registers: Array.from({ length: 16 }, (_, i) => `R${i}`).reduce(
     (acc, curr) => ({ ...acc, [curr]: 0 }),
     {}
   ),
   memory: new Uint8Array(1024),
-  flags: {
-    zero: false,
-    negative: false,
-    carry: false,
-    overflow: false,
-  },
+  symbols: new Map(),
 };
 
+export interface ProcessedInstruction {
+  instruction: Instruction;
+  address: number;
+  line: string;
+  lineIndex: number;
+}
+
 class Emulator {
-  private readonly registers: EmulatorState['registers'];
-  private readonly memory: EmulatorState['memory'];
-  private readonly flags: EmulatorState['flags'];
+  private registers: EmulatorState['registers'];
+  private memory: EmulatorState['memory'];
+  private symbols: EmulatorState['symbols'];
 
-  constructor(memorySize: number = 1024) {
-    this.registers = { ...defaultState.registers };
-    this.memory = new Uint8Array(memorySize);
-    this.flags = { ...defaultState.flags };
+  private instructions: ProcessedInstruction[];
+
+  private listeners: (() => void)[];
+
+  constructor() {
+    this.reset(false);
+
+    this.listeners = [];
   }
 
-  reset() {
-    Object.keys(this.registers).forEach((reg) => (this.registers[reg] = 0));
-    Object.keys(this.flags).forEach((flag) => (this.flags[flag] = false));
-    this.memory.fill(0);
+  reset(notify: boolean = true) {
+    this.registers = { ...defaultEmulatorState.registers };
+    this.memory = new Uint8Array(defaultEmulatorState.memory);
+    this.symbols = new Map(defaultEmulatorState.symbols);
+
+    this.instructions = [];
+
+    if (notify) {
+      console.log('Emulator reset');
+      this.notify();
+    }
   }
 
-  executeProgram(program: string): EmulatorState[] {
+  preprocessProgram(program: string) {
+    this.reset(false);
+
+    // The memory address to which symbols/instructions will be stored
+    let currentMemoryAddress = 0;
+
     const lines = program.split('\n');
-    const states: EmulatorState[] = [defaultState];
     lines.forEach((line, index) => {
+      // Ignore comments and blank lines
       if (line.trim().startsWith(';') || line.trim() === '') {
-        // Ignore comments and blank lines
         return;
       }
+
       // Remove comments
       const sanitizedLine = line.split(';')[0].trim();
+
+      // If line ends in a colon, it is a symbol
+      if (sanitizedLine.endsWith(':')) {
+        const symbol = sanitizedLine.slice(0, -1);
+        this.symbols.set(symbol, { address: currentMemoryAddress, lineIndex: index });
+        return;
+      }
+
+      // Otherwise, treat it as an instruction
       const instruction = createInstruction(sanitizedLine);
       if (instruction) {
-        states.push({
-          ...this.executeInstruction(instruction),
-          line: index,
+        this.instructions.push({
+          instruction,
+          address: currentMemoryAddress,
+          line: sanitizedLine,
+          lineIndex: index,
         });
+        currentMemoryAddress += 4;
       } else {
         throw new SyntaxError(line);
       }
     });
-    return states;
+
+    console.log('Program preprocessed');
+    this.notify();
   }
 
-  executeInstruction(instruction: Instruction) {
-    instruction.execute(this);
-    return this.getEmulatorState();
+  execute() {
+    while (true) {
+      const pc = this.getRegister('R15');
+
+      const processedInstruction = this.instructions.find((i) => i.address === pc);
+      if (!processedInstruction) {
+        console.error('No instruction found at address:', pc);
+        break;
+      }
+
+      processedInstruction.instruction.execute(this);
+
+      if (!processedInstruction.instruction.setsProgramCounter) {
+        this.setRegister('R15', pc + 4);
+      }
+    }
   }
 
+  // Returns the current state of the emulator
   getEmulatorState() {
     return {
-      registers: { ...this.registers },
-      memory: new Uint8Array(this.memory),
-      flags: { ...this.flags },
+      registers: this.registers,
+      memory: this.memory,
+      symbols: this.symbols,
     };
   }
 
-  setFlag(flag: string, value: boolean) {
-    if (!(flag in this.flags)) {
-      throw new InvalidFlagError(flag);
-    }
-
-    this.flags[flag] = value;
-  }
-
-  getFlag(flag: string) {
-    if (!(flag in this.flags)) {
-      throw new InvalidFlagError(flag);
-    }
-
-    return this.flags[flag];
-  }
-
+  // Returns the value of a register
   getRegister(register: string) {
     register = register.toUpperCase();
 
@@ -112,6 +132,7 @@ class Emulator {
     return this.registers[register];
   }
 
+  // Sets the value of a register
   setRegister(register: string, value: number) {
     register = register.toUpperCase();
 
@@ -119,9 +140,13 @@ class Emulator {
       throw new InvalidRegisterError(register);
     }
 
-    this.registers[register] = value;
+    this.registers = { ...this.registers, [register]: value };
+
+    console.log('Register updated:', { register, value });
+    this.notify();
   }
 
+  // Returns the value at a memory address
   getMemory(address: number) {
     if (address < 0 || address >= this.memory.length) {
       throw new InvalidMemoryError(address);
@@ -130,16 +155,38 @@ class Emulator {
     return this.memory[address];
   }
 
+  // Sets the value at a memory address
   setMemory(address: number, value: number) {
     if (address < 0 || address >= this.memory.length) {
       throw new InvalidMemoryError(address);
     }
 
     this.memory[address] = value;
+
+    console.log('Memory updated:', { address, value });
+    this.notify();
   }
 
+  // Returns the size of the memory
   getMemorySize() {
     return this.memory.length;
+  }
+
+  // Returns the value of a symbol
+  getSymbol(symbol: string) {
+    return this.symbols.get(symbol);
+  }
+
+  subscribe(callback) {
+    this.listeners.push(callback);
+  }
+
+  unsubscribe(callback) {
+    this.listeners = this.listeners.filter((listener) => listener !== callback);
+  }
+
+  notify() {
+    this.listeners.forEach((callback) => callback());
   }
 }
 

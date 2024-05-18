@@ -2,11 +2,8 @@
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FC } from 'react';
-
-interface Register {
-  name: string;
-  label?: string;
-}
+import { EmulatorState } from '@/lib/emulator/emulator';
+import { EmulatorPanelProps, formatValue } from '@/components/app/emulator-panel/index';
 
 const specialRegisters: Record<string, string> = {
   R13: 'Stack pointer',
@@ -15,26 +12,15 @@ const specialRegisters: Record<string, string> = {
 };
 
 interface RegistersProps {
-  registersState: Record<string, number>;
-  displayBase: 'hex' | 'dec' | 'bin';
+  registers: EmulatorState['registers'];
+  displayBase: EmulatorPanelProps['displayBase'];
 }
 
-const formatValue = (base: RegistersProps['displayBase'], value: number): string => {
-  switch (base) {
-    case 'hex':
-      return `0x${value.toString(16).toUpperCase()}`;
-    case 'dec':
-      return value.toString();
-    case 'bin':
-      return `0b${value.toString(2)}`;
-  }
-};
-
-const Registers: FC<RegistersProps> = ({ registersState, displayBase }) => {
+const Registers: FC<RegistersProps> = ({ registers, displayBase }) => {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="font-mono">
-        {Object.entries(registersState).map((register) => (
+        {Object.entries(registers).map((register) => (
           <div
             key={register[0]}
             className="flex flex-row items-center justify-between border-b border-gray-200 px-1 py-2 text-lg"
@@ -46,7 +32,7 @@ const Registers: FC<RegistersProps> = ({ registersState, displayBase }) => {
               <TooltipContent side="right">
                 <span className="text-sm">{specialRegisters[register[0]] || 'Data register'}</span>
               </TooltipContent>
-              <span className="">{formatValue(displayBase, registersState[register[0]])}</span>
+              <span className="">{formatValue(displayBase, registers[register[0]])}</span>
             </Tooltip>
           </div>
         ))}

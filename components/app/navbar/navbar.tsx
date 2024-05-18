@@ -15,8 +15,6 @@ interface NavbarProps {
   onStepBack: () => void;
   onReset: () => void;
   onDisplayBaseChange: (base: 'hex' | 'dec' | 'bin') => void;
-  processed: boolean;
-  executing: boolean;
 }
 
 const Navbar: FC<NavbarProps> = ({
@@ -25,30 +23,7 @@ const Navbar: FC<NavbarProps> = ({
   onStepBack,
   onReset,
   onDisplayBaseChange,
-  processed,
-  executing,
 }) => {
-  // TODO: This could be improved
-  const statusText = () => {
-    if (executing) {
-      return 'Stepping...';
-    }
-    if (processed && !executing) {
-      return 'Execution complete.';
-    }
-    return 'Emulator ready.';
-  };
-
-  const statusColour = () => {
-    if (executing) {
-      return 'bg-blue-200';
-    }
-    if (processed && !executing) {
-      return 'bg-green-200';
-    }
-    return 'bg-transparent';
-  };
-
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
@@ -57,10 +32,8 @@ const Navbar: FC<NavbarProps> = ({
         <NavbarMenu />
       </div>
 
-      <div
-        className={`flex w-full max-w-[640px] items-center justify-center rounded-md border ${statusColour()}`}
-      >
-        {statusText()}
+      <div className="flex w-full max-w-[640px] items-center justify-center rounded-md border">
+        Emulator ready.
       </div>
 
       <TooltipProvider delayDuration={0}>
