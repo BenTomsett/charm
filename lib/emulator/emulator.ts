@@ -1,7 +1,11 @@
-import { InfiniteLoopError, InvalidMemoryError, InvalidRegisterError } from '@/lib/emulator/errors';
+import {
+  InfiniteLoopError,
+  InvalidMemoryError,
+  InvalidRegisterError,
+  UnalignedMemoryError,
+} from '@/lib/emulator/errors';
 import { createInstruction } from '@/lib/emulator/instruction-factory';
 import Instruction from '@/lib/emulator/instruction';
-import { editor } from 'monaco-editor';
 
 export interface EmulatorState {
   registers: Record<string, number>;
@@ -215,7 +219,14 @@ class Emulator {
       throw new InvalidMemoryError(address);
     }
 
-    this.memory[address] = value;
+    if (address % 4 !== 0) {
+      throw new UnalignedMemoryError(address);
+    }
+
+    this.memory[address] = value & 0xff;
+    this.memory[address + 1] = (value >> 8) & 0xff;
+    this.memory[address + 2] = (value >> 16) & 0xff;
+    this.memory[address + 3] = (value >> 24) & 0xff;
 
     console.log('Memory updated:', { address, value });
     this.notify();

@@ -35,7 +35,7 @@ const EmulatorPanel: FC<EmulatorPanelProps> = ({ displayBase, registers, memory,
         <Registers registers={registers} displayBase={displayBase} />
       </TabsContent>
       <TabsContent value="memory">
-        <Memory />
+        <Memory memory={memory} displayBase={displayBase} />
       </TabsContent>
       <TabsContent value="symbols">
         <Symbols symbols={symbols} displayBase={displayBase} />

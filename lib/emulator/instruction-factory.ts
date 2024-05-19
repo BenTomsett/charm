@@ -7,6 +7,8 @@ import OrrInstruction from '@/lib/emulator/instructions/orr';
 import EorInstruction from '@/lib/emulator/instructions/eor';
 import BicInstruction from '@/lib/emulator/instructions/bic';
 import BInstruction from '@/lib/emulator/instructions/b';
+import StrInstruction from '@/lib/emulator/instructions/str';
+import LdrInstruction from '@/lib/emulator/instructions/ldr';
 
 type InstructionFactory = (args: string[]) => Instruction;
 const instructionLookup: { [key: string]: InstructionFactory } = {
@@ -18,6 +20,8 @@ const instructionLookup: { [key: string]: InstructionFactory } = {
   [EorInstruction.opcode]: EorInstruction.create,
   [BicInstruction.opcode]: BicInstruction.create,
   [BInstruction.opcode]: BInstruction.create,
+  [StrInstruction.opcode]: StrInstruction.create,
+  [LdrInstruction.opcode]: LdrInstruction.create,
 };
 
 export const createInstruction = (line: string): Instruction | null => {

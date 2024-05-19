@@ -14,6 +14,14 @@ export class InvalidMemoryError extends Error {
   }
 }
 
+export class UnalignedMemoryError extends Error {
+  constructor(address: number) {
+    super(`Memory address ${address} is not aligned to 4-byte boundary`);
+
+    this.name = 'InvalidMemoryError';
+  }
+}
+
 export class InvalidFlagError extends Error {
   constructor(flag: string) {
     super(`Invalid flag ${flag}`);
