@@ -1,6 +1,7 @@
-import { InvalidMemoryError, InvalidRegisterError } from '@/lib/emulator/errors';
+import { InfiniteLoopError, InvalidMemoryError, InvalidRegisterError } from '@/lib/emulator/errors';
 import { createInstruction } from '@/lib/emulator/instruction-factory';
 import Instruction from '@/lib/emulator/instruction';
+import { editor } from 'monaco-editor';
 
 export interface EmulatorState {
   registers: Record<string, number>;
@@ -31,6 +32,9 @@ class Emulator {
 
   private instructions: ProcessedInstruction[];
 
+  private states: EmulatorState[];
+  private currentState: number;
+
   private listeners: (() => void)[];
 
   constructor() {
@@ -45,6 +49,8 @@ class Emulator {
     this.symbols = new Map(defaultEmulatorState.symbols);
 
     this.instructions = [];
+    this.states = [this.getEmulatorState()];
+    this.currentState = 0;
 
     if (notify) {
       console.log('Emulator reset');
@@ -52,7 +58,25 @@ class Emulator {
     }
   }
 
+  // Returns the current state of the emulator
+  getEmulatorState() {
+    return {
+      registers: this.registers,
+      memory: this.memory,
+      symbols: this.symbols,
+    };
+  }
+
+  setEmulatorState(state: EmulatorState) {
+    this.registers = { ...state.registers };
+    this.memory = new Uint8Array(state.memory);
+    this.symbols = new Map(state.symbols);
+
+    this.notify();
+  }
+
   preprocessProgram(program: string) {
+    console.log('Preprocessing program');
     this.reset(false);
 
     // The memory address to which symbols/instructions will be stored
@@ -95,7 +119,14 @@ class Emulator {
   }
 
   execute() {
+    const executionLimit = 1000;
+    let executionCount = 0;
+
     while (true) {
+      if (executionCount++ > executionLimit) {
+        throw new InfiniteLoopError(executionLimit);
+      }
+
       const pc = this.getRegister('R15');
 
       const processedInstruction = this.instructions.find((i) => i.address === pc);
@@ -109,16 +140,39 @@ class Emulator {
       if (!processedInstruction.instruction.setsProgramCounter) {
         this.setRegister('R15', pc + 4);
       }
+
+      this.states.push(this.getEmulatorState());
+      this.currentState++;
     }
+
+    this.currentState = this.states.length - 1;
   }
 
-  // Returns the current state of the emulator
-  getEmulatorState() {
-    return {
-      registers: this.registers,
-      memory: this.memory,
-      symbols: this.symbols,
-    };
+  stepForward() {
+    const pc = this.getRegister('R15');
+
+    const processedInstruction = this.instructions.find((i) => i.address === pc);
+    if (!processedInstruction) {
+      console.error('No instruction found at address:', pc);
+      return;
+    }
+
+    processedInstruction.instruction.execute(this);
+
+    if (!processedInstruction.instruction.setsProgramCounter) {
+      this.setRegister('R15', pc + 4);
+    }
+
+    this.states.push(this.getEmulatorState());
+    this.currentState++;
+  }
+
+  stepBack() {
+    if (this.currentState > 0) {
+      this.states.pop();
+      this.currentState--;
+      this.setEmulatorState(this.states[this.currentState]);
+    }
   }
 
   // Returns the value of a register

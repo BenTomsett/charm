@@ -38,13 +38,9 @@ export default function Home() {
 
   useEffect(() => {
     const handleUpdate = () => {
-      console.log('Emulator state updated');
       const state = emulator.getEmulatorState();
-      console.log({ oldState: registers, newState: state.registers });
       setRegisters(state.registers);
-      console.log({ oldState: memory, newState: state.memory });
       setMemory(state.memory);
-      console.log({ oldState: symbols, newState: state.symbols });
       setSymbols(state.symbols);
     };
 
@@ -67,15 +63,29 @@ export default function Home() {
       preprocess();
     }
 
-    emulator.execute();
+    try {
+      emulator.execute();
+    } catch (e) {
+      setStatus(EmulatorStatus.Error);
+      toast({ title: 'Error', description: e.message });
+    }
   };
 
   const onStepForward = () => {
-    // TODO: re-implement
+    if (status < EmulatorStatus.Processed) {
+      preprocess();
+    }
+
+    try {
+      emulator.stepForward();
+    } catch (e) {
+      setStatus(EmulatorStatus.Error);
+      toast({ title: 'Error', description: e.message });
+    }
   };
 
   const onStepBack = () => {
-    // TODO: re-implement
+    emulator.stepBack();
   };
 
   const onReset = async () => {

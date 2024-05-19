@@ -30,6 +30,22 @@ export class SyntaxError extends Error {
   }
 }
 
+export class RuntimeError extends Error {
+  constructor(line: string) {
+    super(line);
+
+    this.name = 'RuntimeError';
+  }
+}
+
+export class InfiniteLoopError extends Error {
+  constructor(executionLimit: number) {
+    super(`Possible infinite loop detected (execution limit ${executionLimit} reached).`);
+
+    this.name = 'RuntimeError';
+  }
+}
+
 export class ArgumentError extends Error {
   constructor(message: string) {
     super(message);
