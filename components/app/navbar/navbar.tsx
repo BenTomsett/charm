@@ -8,13 +8,14 @@ import React, { FC } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import AboutDialog from '@/components/app/about-dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DisplayBase } from '@/lib/utils';
 
 interface NavbarProps {
   onExecute: () => void;
   onStepForward: () => void;
   onStepBack: () => void;
   onReset: () => void;
-  onDisplayBaseChange: (base: 'hex' | 'dec' | 'bin') => void;
+  onDisplayBaseChange: (base: DisplayBase) => void;
 }
 
 const Navbar: FC<NavbarProps> = ({

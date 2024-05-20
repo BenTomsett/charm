@@ -12,10 +12,10 @@ class BInstruction extends Instruction {
     super();
   }
 
-  static create(args: string[]): BInstruction {
+  static create(opcode: string, args: string[]): BInstruction {
     if (args.length !== BInstruction.argCount) {
       throw new ArgumentError(
-        `B instruction must have exactly ${BInstruction.argCount} argument(s)`
+        `${opcode} instruction must have exactly ${BInstruction.argCount} argument(s)`
       );
     }
 

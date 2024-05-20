@@ -3,7 +3,7 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FC } from 'react';
 import { EmulatorState } from '@/lib/emulator/emulator';
-import { EmulatorPanelProps, formatValue } from '@/components/app/emulator-panel/index';
+import { DisplayBase, formatValue } from '@/lib/utils';
 
 const specialRegisters: Record<string, string> = {
   R13: 'Stack pointer',
@@ -13,7 +13,7 @@ const specialRegisters: Record<string, string> = {
 
 interface RegistersProps {
   registers: EmulatorState['registers'];
-  displayBase: EmulatorPanelProps['displayBase'];
+  displayBase: DisplayBase;
 }
 
 const Registers: FC<RegistersProps> = ({ registers, displayBase }) => {

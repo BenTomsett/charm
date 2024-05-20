@@ -14,10 +14,10 @@ class LdrInstruction extends Instruction {
     super();
   }
 
-  static create(args: string[]): LdrInstruction {
+  static create(opcode: string, args: string[]): LdrInstruction {
     if (args.length !== LdrInstruction.argCount) {
       throw new ArgumentError(
-        `LDR instruction must have exactly ${LdrInstruction.argCount} argument(s)`
+        `${opcode} instruction must have exactly ${LdrInstruction.argCount} argument(s)`
       );
     }
 

@@ -6,7 +6,7 @@ abstract class Instruction {
   public setsProgramCounter: boolean = false;
   public abstract execute(emulator: Emulator): void;
 
-  static create(args: string[]): Instruction {
+  static create(opcode: string, args: string[]): Instruction {
     throw new Error('Cannot create an abstract instruction');
   }
 }

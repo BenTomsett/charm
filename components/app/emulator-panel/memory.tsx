@@ -1,6 +1,5 @@
 import { EmulatorState } from '@/lib/emulator/emulator';
 import { FC } from 'react';
-import { formatValue } from '@/components/app/emulator-panel/index';
 import {
   Table,
   TableBody,
@@ -9,10 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { DisplayBase, formatValue } from '@/lib/utils';
 
 interface MemoryProps {
   memory: EmulatorState['memory'];
-  displayBase: 'hex' | 'dec' | 'bin';
+  displayBase: DisplayBase;
 }
 
 const Memory: FC<MemoryProps> = ({ memory, displayBase }) => {

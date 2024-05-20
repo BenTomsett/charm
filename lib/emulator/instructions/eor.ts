@@ -10,39 +10,47 @@ class EorInstruction extends Instruction {
   constructor(
     public dest: string,
     public src1: string,
-    public src2: string
+    public src2: string,
+    public setFlags = false
   ) {
     super();
   }
 
-  static create(args: string[]): EorInstruction {
+  static create(opcode: string, args: string[]): EorInstruction {
     if (args.length !== EorInstruction.argCount) {
       throw new ArgumentError(
-        `EOR instruction must have exactly ${EorInstruction.argCount} argument(s)`
+        `${opcode} instruction must have exactly ${EorInstruction.argCount} argument(s)`
       );
     }
 
-    return new EorInstruction(args[0], args[1], args[2]);
+    const setFlags = opcode === 'EORS';
+
+    return new EorInstruction(args[0], args[1], args[2], setFlags);
   }
 
   execute(emulator: Emulator): void {
     const val1 = emulator.getRegister(this.src1);
-
-    let val2;
+    let val2 = 0;
 
     try {
-      val2 = emulator.getRegister(this.src2);
+      if (this.src2.startsWith('#')) {
+        val2 = parseImmediate(this.src2);
+      } else {
+        val2 = emulator.getRegister(this.src2);
+      }
     } catch (e) {
       if (!(e instanceof InvalidRegisterError)) {
         throw e;
-      } else if (!this.src2.startsWith('#')) {
-        throw e;
-      } else {
-        val2 = parseImmediate(this.src2);
       }
     }
 
-    emulator.setRegister(this.dest, val1 ^ val2);
+    const result = val1 ^ val2;
+    emulator.setRegister(this.dest, result);
+
+    if (this.setFlags) {
+      if (result & 0x80000000) emulator.setFlag('N', true);
+      if (result === 0) emulator.setFlag('Z', true);
+    }
   }
 }
 

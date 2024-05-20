@@ -1,6 +1,6 @@
-import Emulator from "@/lib/emulator";
-import Instruction from "@/lib/emulator/instruction";
-import { ArgumentError } from "@/lib/emulator/errors";
+import Emulator from '@/lib/emulator';
+import Instruction from '@/lib/emulator/instruction';
+import { ArgumentError } from '@/lib/emulator/errors';
 
 class StrInstruction extends Instruction {
   static opcode = 'STR';
@@ -14,10 +14,10 @@ class StrInstruction extends Instruction {
     super();
   }
 
-  static create(args: string[]): StrInstruction {
+  static create(opcode: string, args: string[]): StrInstruction {
     if (args.length !== StrInstruction.argCount) {
       throw new ArgumentError(
-        `STR instruction must have exactly ${StrInstruction.argCount} argument(s)`
+        `${opcode} instruction must have exactly ${StrInstruction.argCount} argument(s)`
       );
     }
 

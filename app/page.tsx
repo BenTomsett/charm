@@ -4,15 +4,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useWindowSize } from '@/lib/hooks/use-window-size';
 
 import Navbar from '@/components/app/navbar/navbar';
-import EmulatorPanel from '@/components/app/emulator-panel';
 
 import { useToast } from '@/components/ui/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 import Emulator from '@/lib/emulator';
 
 import { editor } from 'monaco-editor';
 import MonacoEditor from '@/components/app/editor';
+
+import Registers from '@/components/app/emulator-panel/registers';
+import Memory from '@/components/app/emulator-panel/memory';
+import Symbols from '@/components/app/emulator-panel/symbols';
+import Flags from '@/components/app/emulator-panel/flags';
 
 enum EmulatorStatus {
   Ready,
@@ -34,6 +39,7 @@ export default function Home() {
   const [emulator, setEmulator] = useState<Emulator>(new Emulator());
   const [registers, setRegisters] = useState(emulator.getEmulatorState().registers);
   const [memory, setMemory] = useState(emulator.getEmulatorState().memory);
+  const [flags, setFlags] = useState(emulator.getEmulatorState().flags);
   const [symbols, setSymbols] = useState(emulator.getEmulatorState().symbols);
 
   useEffect(() => {
@@ -41,6 +47,7 @@ export default function Home() {
       const state = emulator.getEmulatorState();
       setRegisters(state.registers);
       setMemory(state.memory);
+      setFlags(state.flags);
       setSymbols(state.symbols);
     };
 
@@ -101,7 +108,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="flex h-dvh max-h-dvh flex-col">
       <Navbar
         onExecute={onExecute}
         onStepForward={onStepForward}
@@ -109,7 +116,7 @@ export default function Home() {
         onReset={onReset}
         onDisplayBaseChange={setDisplayBase}
       />
-      <main className="flex-1 bg-gray-100 p-4">
+      <main className="flex-grow overflow-hidden bg-gray-100 p-4">
         <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>
           <ResizablePanel defaultSize={70} minSize={60}>
             <div className="h-full overflow-hidden rounded-md bg-white">
@@ -123,17 +130,32 @@ export default function Home() {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={30} minSize={20}>
-            <div className="h-full overflow-y-scroll rounded-md bg-white p-4">
-              <EmulatorPanel
-                displayBase={displayBase}
-                registers={registers}
-                memory={memory}
-                symbols={symbols}
-              />
+            <div className="flex h-full flex-col justify-between overflow-hidden rounded-md bg-white">
+              <div className="overflow-y-scroll p-4">
+                <Tabs defaultValue="registers">
+                  <TabsList className="w-full">
+                    <TabsTrigger value="registers">Registers</TabsTrigger>
+                    <TabsTrigger value="memory">Memory</TabsTrigger>
+                    <TabsTrigger value="symbols">Symbols</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="registers">
+                    <Registers registers={registers} displayBase={displayBase} />
+                  </TabsContent>
+                  <TabsContent value="memory">
+                    <Memory memory={memory} displayBase={displayBase} />
+                  </TabsContent>
+                  <TabsContent value="symbols">
+                    <Symbols symbols={symbols} displayBase={displayBase} />
+                  </TabsContent>
+                </Tabs>
+              </div>
+              <div>
+                <Flags flags={flags} />
+              </div>
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </main>
-    </>
+    </div>
   );
 }

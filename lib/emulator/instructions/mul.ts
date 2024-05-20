@@ -14,10 +14,10 @@ class MulInstruction extends Instruction {
     super();
   }
 
-  static create(args: string[]): MulInstruction {
+  static create(opcode: string, args: string[]): MulInstruction {
     if (args.length !== MulInstruction.argCount) {
       throw new ArgumentError(
-        `MUL instruction must have exactly ${MulInstruction.argCount} argument(s)`
+        `${opcode} instruction must have exactly ${MulInstruction.argCount} argument(s)`
       );
     }
 

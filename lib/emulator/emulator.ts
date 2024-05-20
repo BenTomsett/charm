@@ -10,6 +10,7 @@ import Instruction from '@/lib/emulator/instruction';
 export interface EmulatorState {
   registers: Record<string, number>;
   memory: Uint8Array;
+  flags: { N: boolean; Z: boolean; C: boolean; V: boolean };
   symbols: Map<string, { address: number; lineIndex: number }>;
 }
 
@@ -19,6 +20,7 @@ export const defaultEmulatorState = {
     {}
   ),
   memory: new Uint8Array(1024),
+  flags: { N: false, Z: false, C: false, V: false },
   symbols: new Map(),
 };
 
@@ -32,6 +34,7 @@ export interface ProcessedInstruction {
 class Emulator {
   private registers: EmulatorState['registers'];
   private memory: EmulatorState['memory'];
+  private flags: EmulatorState['flags'];
   private symbols: EmulatorState['symbols'];
 
   private instructions: ProcessedInstruction[];
@@ -50,6 +53,7 @@ class Emulator {
   reset(notify: boolean = true) {
     this.registers = { ...defaultEmulatorState.registers };
     this.memory = new Uint8Array(defaultEmulatorState.memory);
+    this.flags = { ...defaultEmulatorState.flags };
     this.symbols = new Map(defaultEmulatorState.symbols);
 
     this.instructions = [];
@@ -67,6 +71,7 @@ class Emulator {
     return {
       registers: this.registers,
       memory: this.memory,
+      flags: this.flags,
       symbols: this.symbols,
     };
   }
@@ -74,6 +79,7 @@ class Emulator {
   setEmulatorState(state: EmulatorState) {
     this.registers = { ...state.registers };
     this.memory = new Uint8Array(state.memory);
+    this.flags = { ...state.flags };
     this.symbols = new Map(state.symbols);
 
     this.notify();
@@ -232,9 +238,25 @@ class Emulator {
     this.notify();
   }
 
-  // Returns the size of the memory
-  getMemorySize() {
-    return this.memory.length;
+  // Returns the value of a flag
+  getFlag(flag: string) {
+    if (!(flag in this.flags)) {
+      throw new Error(`Invalid flag: ${flag}`);
+    }
+
+    return this.flags[flag];
+  }
+
+  // Sets the value of a flag
+  setFlag(flag: string, value: boolean) {
+    if (!(flag in this.flags)) {
+      throw new Error(`Invalid flag: ${flag}`);
+    }
+
+    this.flags = { ...this.flags, [flag]: value };
+
+    console.log('Flag updated:', { flag, value });
+    this.notify();
   }
 
   // Returns the value of a symbol

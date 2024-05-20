@@ -10,15 +10,23 @@ import BInstruction from '@/lib/emulator/instructions/b';
 import StrInstruction from '@/lib/emulator/instructions/str';
 import LdrInstruction from '@/lib/emulator/instructions/ldr';
 
-type InstructionFactory = (args: string[]) => Instruction;
+type InstructionFactory = (opcode: string, args: string[]) => Instruction;
+
 const instructionLookup: { [key: string]: InstructionFactory } = {
   [AddInstruction.opcode]: AddInstruction.create,
+  [AddInstruction.opcode + 'S']: AddInstruction.create,
   [SubInstruction.opcode]: SubInstruction.create,
+  [SubInstruction.opcode + 'S']: SubInstruction.create,
   [MovInstruction.opcode]: MovInstruction.create,
+  [MovInstruction.opcode + 'S']: MovInstruction.create,
   [AndInstruction.opcode]: AndInstruction.create,
+  [AndInstruction.opcode + 'S']: AndInstruction.create,
   [OrrInstruction.opcode]: OrrInstruction.create,
+  [OrrInstruction.opcode + 'S']: OrrInstruction.create,
   [EorInstruction.opcode]: EorInstruction.create,
+  [EorInstruction.opcode + 'S']: EorInstruction.create,
   [BicInstruction.opcode]: BicInstruction.create,
+  [BicInstruction.opcode + 'S']: BicInstruction.create,
   [BInstruction.opcode]: BInstruction.create,
   [StrInstruction.opcode]: StrInstruction.create,
   [LdrInstruction.opcode]: LdrInstruction.create,
@@ -27,10 +35,13 @@ const instructionLookup: { [key: string]: InstructionFactory } = {
 export const createInstruction = (line: string): Instruction | null => {
   const parts = line.trim().split(/\s+/);
   const opcode = parts[0].toUpperCase();
-  const argPart = parts.slice(1).join('');
-  const args = argPart.split(',').map((arg) => arg.trim());
+  const args = parts
+    .slice(1)
+    .join('')
+    .split(',')
+    .map((arg) => arg.trim());
 
-  const instruction = instructionLookup[opcode](args);
+  const instruction = instructionLookup[opcode](opcode, args);
 
   if (instruction) {
     return instruction;

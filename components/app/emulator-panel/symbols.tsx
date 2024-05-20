@@ -8,11 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatValue } from '@/components/app/emulator-panel/index';
+import { DisplayBase, formatValue } from '@/lib/utils';
 
 interface SymbolsProps {
   symbols: EmulatorState['symbols'];
-  displayBase: 'hex' | 'dec' | 'bin';
+  displayBase: DisplayBase;
 }
 
 const Symbols: FC<SymbolsProps> = ({ symbols, displayBase }) => {
