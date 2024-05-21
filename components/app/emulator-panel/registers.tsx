@@ -23,13 +23,11 @@ const Registers: FC<RegistersProps> = ({ registers, displayBase }) => {
   useEffect(() => {
     const newFlash: Record<string, boolean> = {};
 
-    console.log({ registers });
     Object.keys(registers).forEach((key) => {
       if (registers[key] !== prevRegisters[key]) {
         newFlash[key] = true;
       }
     });
-    console.log({ newFlash });
 
     setFlash(newFlash);
     setPrevRegisters(registers);

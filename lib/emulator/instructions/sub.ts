@@ -1,6 +1,7 @@
 import Emulator from '@/lib/emulator';
 import Instruction from '@/lib/emulator/instruction';
-import { ArgumentError } from '@/lib/emulator/errors';
+import { ArgumentError, InvalidRegisterError } from '@/lib/emulator/errors';
+import parseImmediate from '@/lib/emulator/instructions/util/immediate';
 
 class SubInstruction extends Instruction {
   static opcode = 'SUB';
@@ -29,7 +30,20 @@ class SubInstruction extends Instruction {
 
   execute(emulator: Emulator): void {
     const val1 = emulator.getRegister(this.src1);
-    const val2 = emulator.getRegister(this.src2);
+    let val2 = 0;
+
+    try {
+      if (this.src2.startsWith('#')) {
+        val2 = parseImmediate(this.src2);
+      } else {
+        val2 = emulator.getRegister(this.src2);
+      }
+    } catch (e) {
+      if (!(e instanceof InvalidRegisterError)) {
+        throw e;
+      }
+    }
+
     const result = val1 - val2;
     emulator.setRegister(this.dest, result);
 

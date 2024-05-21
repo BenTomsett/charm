@@ -17,7 +17,6 @@ const Flags: FC<FlagsProps> = ({ flags }) => {
         newFlash[key] = true;
       }
     });
-    console.log({ newFlash });
 
     setFlash(newFlash);
     setPrevFlags(flags);
