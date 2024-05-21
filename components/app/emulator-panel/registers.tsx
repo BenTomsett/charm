@@ -1,7 +1,7 @@
 'use client';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { EmulatorState } from '@/lib/emulator/emulator';
 import { DisplayBase, formatValue } from '@/lib/utils';
 
@@ -17,22 +17,44 @@ interface RegistersProps {
 }
 
 const Registers: FC<RegistersProps> = ({ registers, displayBase }) => {
+  const [prevRegisters, setPrevRegisters] = useState(registers);
+  const [flash, setFlash] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const newFlash: Record<string, boolean> = {};
+
+    console.log({ registers });
+    Object.keys(registers).forEach((key) => {
+      if (registers[key] !== prevRegisters[key]) {
+        newFlash[key] = true;
+      }
+    });
+    console.log({ newFlash });
+
+    setFlash(newFlash);
+    setPrevRegisters(registers);
+
+    const timer = setTimeout(() => {
+      setFlash({});
+    }, 1000);
+  }, [registers]);
+
   return (
     <TooltipProvider delayDuration={0}>
       <div className="font-mono">
-        {Object.entries(registers).map((register) => (
+        {Object.entries(registers).map(([reg, value]) => (
           <div
-            key={register[0]}
-            className="flex flex-row items-center justify-between border-b border-gray-200 px-1 py-2 text-lg"
+            key={reg}
+            className={`flex flex-row items-center justify-between border-b border-gray-200 px-1 py-2 text-lg ${flash[reg] ? 'flash-animation' : ''}`}
           >
             <Tooltip>
               <TooltipTrigger>
-                <span className="font-medium text-gray-500">{register[0]}</span>
+                <span className="font-medium text-gray-500">{reg}</span>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <span className="text-sm">{specialRegisters[register[0]] || 'Data register'}</span>
+                <span className="text-sm">{specialRegisters[reg] || 'Data register'}</span>
               </TooltipContent>
-              <span className="">{formatValue(displayBase, registers[register[0]])}</span>
+              <span className="">{formatValue(displayBase, value)}</span>
             </Tooltip>
           </div>
         ))}
