@@ -9,7 +9,8 @@ class MulInstruction extends Instruction {
   constructor(
     public dest: string,
     public src1: string,
-    public src2: string
+    public src2: string,
+    public setFlags = false
   ) {
     super();
   }
@@ -21,13 +22,25 @@ class MulInstruction extends Instruction {
       );
     }
 
-    return new MulInstruction(args[0], args[1], args[2]);
+    const setFlags = opcode === 'MULS';
+
+    return new MulInstruction(args[0], args[1], args[2], setFlags);
   }
 
   execute(emulator: Emulator): void {
     const val1 = emulator.getRegister(this.src1);
     const val2 = emulator.getRegister(this.src2);
-    emulator.setRegister(this.dest, val1 * val2);
+
+    const result = val1 * val2;
+    emulator.setRegister(this.dest, result);
+
+    if (this.setFlags) {
+      if (result === 0) emulator.setFlag('Z', true);
+      if (result < 0) emulator.setFlag('N', true);
+      if (val1 >= val2) emulator.setFlag('C', true);
+      if ((val1 >= 0 && val2 < 0 && result < 0) || (val1 < 0 && val2 > 0 && result >= 0))
+        emulator.setFlag('V', true);
+    }
   }
 }
 
