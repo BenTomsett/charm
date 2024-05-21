@@ -88,7 +88,7 @@ export default function Home() {
   };
 
   const onStepForward = () => {
-    if (status !== EmulatorStatus.Processed) {
+    if (status !== EmulatorStatus.Processed && status !== EmulatorStatus.Executing) {
       if (!preprocess()) return;
     }
 
