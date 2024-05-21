@@ -61,7 +61,6 @@ class Emulator {
     this.currentState = 0;
 
     if (notify) {
-      console.log('Emulator reset');
       this.notify();
     }
   }
@@ -124,7 +123,6 @@ class Emulator {
       }
     });
 
-    console.log('Program preprocessed');
     this.notify();
   }
 
@@ -208,6 +206,11 @@ class Emulator {
 
     console.log('Register updated:', { register, value });
     this.notify();
+  }
+
+  incrementProgramCounter() {
+    const pc = this.getRegister('R15');
+    this.setRegister('R15', pc + 4);
   }
 
   // Returns the value at a memory address

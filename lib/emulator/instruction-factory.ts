@@ -21,6 +21,7 @@ import CmpInstruction from '@/lib/emulator/instructions/cmp';
 import LslInstruction from '@/lib/emulator/instructions/lsl';
 import LsrInstruction from '@/lib/emulator/instructions/lsr';
 import RorInstruction from '@/lib/emulator/instructions/ror';
+import BleInstruction from '@/lib/emulator/instructions/ble';
 
 type InstructionFactory = (opcode: string, args: string[]) => Instruction;
 
@@ -41,6 +42,8 @@ const instructionLookup: { [key: string]: InstructionFactory } = {
 
   [BicInstruction.opcode]: BicInstruction.create,
   [BicInstruction.opcode + 'S']: BicInstruction.create,
+
+  [BleInstruction.opcode]: BleInstruction.create,
 
   [BltInstruction.opcode]: BltInstruction.create,
 

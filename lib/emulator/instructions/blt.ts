@@ -31,6 +31,8 @@ class BltInstruction extends Instruction {
       }
 
       emulator.setRegister('R15', symbol.address);
+    } else {
+      emulator.incrementProgramCounter();
     }
   }
 }
