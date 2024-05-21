@@ -1,3 +1,5 @@
+import { UnknownInstructionError } from '@/lib/emulator/errors';
+
 import Instruction from '@/lib/emulator/instruction';
 import AddInstruction from '@/lib/emulator/instructions/add';
 import MovInstruction from '@/lib/emulator/instructions/mov';
@@ -91,11 +93,10 @@ export const createInstruction = (line: string): Instruction | null => {
     .split(',')
     .map((arg) => arg.trim());
 
-  const instruction = instructionLookup[opcode](opcode, args);
-
-  if (instruction) {
-    return instruction;
+  const lookup = instructionLookup[opcode];
+  if (lookup) {
+    return lookup(opcode, args);
+  } else {
+    throw new UnknownInstructionError(opcode);
   }
-
-  return null;
 };

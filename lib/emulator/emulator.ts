@@ -162,7 +162,7 @@ class Emulator {
     const processedInstruction = this.instructions.find((i) => i.address === pc);
     if (!processedInstruction) {
       console.error('No instruction found at address:', pc);
-      return;
+      return false;
     }
 
     processedInstruction.instruction.execute(this);
@@ -173,6 +173,8 @@ class Emulator {
 
     this.states.push(this.getEmulatorState());
     this.currentState++;
+
+    return true;
   }
 
   stepBack() {
@@ -180,6 +182,9 @@ class Emulator {
       this.states.pop();
       this.currentState--;
       this.setEmulatorState(this.states[this.currentState]);
+      return true;
+    } else {
+      return false;
     }
   }
 

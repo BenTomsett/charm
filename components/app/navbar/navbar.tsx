@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DisplayBase } from '@/lib/utils';
 
 interface NavbarProps {
+  status: number;
   onExecute: () => void;
   onStepForward: () => void;
   onStepBack: () => void;
@@ -21,6 +22,7 @@ interface NavbarProps {
 }
 
 const Navbar: FC<NavbarProps> = ({
+  status,
   onExecute,
   onStepForward,
   onStepBack,
@@ -29,6 +31,23 @@ const Navbar: FC<NavbarProps> = ({
   onProgramSave,
   onProgramLoad,
 }) => {
+  const statusValues = () => {
+    switch (status) {
+      case 1:
+        return { text: 'Processing...', color: 'bg-orange-200/50' };
+      case 2:
+        return { text: 'Processed', color: 'bg-orange-200' };
+      case 3:
+        return { text: 'Executing...', color: 'bg-green-200/50' };
+      case 4:
+        return { text: 'Executed', color: 'bg-green-200' };
+      case 5:
+        return { text: 'Error', color: 'bg-red-200' };
+      default:
+        return { text: 'Ready', color: 'bg-transparent' };
+    }
+  };
+
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
@@ -37,8 +56,10 @@ const Navbar: FC<NavbarProps> = ({
         <NavbarMenu actions={{ save: onProgramSave, open: onProgramLoad }} />
       </div>
 
-      <div className="flex w-full max-w-[640px] items-center justify-center rounded-md border">
-        Emulator ready.
+      <div
+        className={`flex w-full max-w-[640px] items-center justify-center rounded-md border ${statusValues().color}`}
+      >
+        {statusValues().text}
       </div>
 
       <TooltipProvider delayDuration={0}>

@@ -61,3 +61,11 @@ export class ArgumentError extends Error {
     this.name = 'ArgumentError';
   }
 }
+
+export class UnknownInstructionError extends Error {
+  constructor(opcode: string) {
+    super(`Unknown instruction: ${opcode}`);
+
+    this.name = 'UnknownInstructionError';
+  }
+}

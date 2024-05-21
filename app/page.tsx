@@ -35,8 +35,8 @@ export default function Home() {
 
   const [displayBase, setDisplayBase] = useState<'hex' | 'bin' | 'dec'>('hex');
 
+  const [emulator] = useState<Emulator>(new Emulator());
   const [status, setStatus] = useState(0);
-  const [emulator, setEmulator] = useState<Emulator>(new Emulator());
   const [registers, setRegisters] = useState(emulator.getEmulatorState().registers);
   const [memory, setMemory] = useState(emulator.getEmulatorState().memory);
   const [flags, setFlags] = useState(emulator.getEmulatorState().flags);
@@ -61,17 +61,26 @@ export default function Home() {
   const preprocess = () => {
     setStatus(EmulatorStatus.Processing);
     const program = editorRef.current?.getValue() || '';
-    emulator.preprocessProgram(program);
-    setStatus(EmulatorStatus.Processed);
+    try {
+      emulator.preprocessProgram(program);
+      setStatus(EmulatorStatus.Processed);
+      return true;
+    } catch (e) {
+      setStatus(EmulatorStatus.Error);
+      toast({ title: 'Error', description: e.message });
+      return false;
+    }
   };
 
   const onExecute = () => {
     if (status !== EmulatorStatus.Processed) {
-      preprocess();
+      if (!preprocess()) return;
     }
 
     try {
+      setStatus(EmulatorStatus.Executing);
       emulator.execute();
+      setStatus(EmulatorStatus.Executed);
     } catch (e) {
       setStatus(EmulatorStatus.Error);
       toast({ title: 'Error', description: e.message });
@@ -79,12 +88,15 @@ export default function Home() {
   };
 
   const onStepForward = () => {
-    if (status < EmulatorStatus.Processed) {
-      preprocess();
+    if (status !== EmulatorStatus.Processed) {
+      if (!preprocess()) return;
     }
 
     try {
-      emulator.stepForward();
+      setStatus(EmulatorStatus.Executing);
+      if (!emulator.stepForward()) {
+        setStatus(EmulatorStatus.Executed);
+      }
     } catch (e) {
       setStatus(EmulatorStatus.Error);
       toast({ title: 'Error', description: e.message });
@@ -92,7 +104,9 @@ export default function Home() {
   };
 
   const onStepBack = () => {
-    emulator.stepBack();
+    if (!emulator.stepBack()) {
+      setStatus(EmulatorStatus.Processed);
+    }
   };
 
   const onReset = async () => {
@@ -143,6 +157,7 @@ export default function Home() {
   return (
     <div className="flex h-dvh max-h-dvh flex-col">
       <Navbar
+        status={status}
         onExecute={onExecute}
         onStepForward={onStepForward}
         onStepBack={onStepBack}
