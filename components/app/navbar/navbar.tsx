@@ -16,6 +16,8 @@ interface NavbarProps {
   onStepBack: () => void;
   onReset: () => void;
   onDisplayBaseChange: (base: DisplayBase) => void;
+  onProgramSave: () => void;
+  onProgramLoad: () => void;
 }
 
 const Navbar: FC<NavbarProps> = ({
@@ -24,13 +26,15 @@ const Navbar: FC<NavbarProps> = ({
   onStepBack,
   onReset,
   onDisplayBaseChange,
+  onProgramSave,
+  onProgramLoad,
 }) => {
   return (
     <nav className="flex justify-between border-b border-gray-200 px-4 py-2">
       <div className="flex items-center">
         <Logo className="pr-4" />
         <div className="h-3/4 border-[0.5px] border-gray-200" />
-        <NavbarMenu />
+        <NavbarMenu actions={{ save: onProgramSave, open: onProgramLoad }} />
       </div>
 
       <div className="flex w-full max-w-[640px] items-center justify-center rounded-md border">

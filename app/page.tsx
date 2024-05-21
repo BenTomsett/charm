@@ -107,6 +107,39 @@ export default function Home() {
     }
   };
 
+  const onProgramSave = () => {
+    const program = editorRef.current?.getValue() || '';
+    const blob = new Blob([program], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'program.asm';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const onProgramLoad = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.asm';
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const program = event.target?.result as string;
+        editorRef.current?.setValue(program);
+      };
+
+      reader.readAsText(file);
+    };
+
+    input.click();
+  };
+
   return (
     <div className="flex h-dvh max-h-dvh flex-col">
       <Navbar
@@ -115,6 +148,8 @@ export default function Home() {
         onStepBack={onStepBack}
         onReset={onReset}
         onDisplayBaseChange={setDisplayBase}
+        onProgramSave={onProgramSave}
+        onProgramLoad={onProgramLoad}
       />
       <main className="flex-grow overflow-hidden bg-gray-100 p-4">
         <ResizablePanelGroup direction={width > 992 ? 'horizontal' : 'vertical'}>

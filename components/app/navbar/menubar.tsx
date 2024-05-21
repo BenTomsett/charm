@@ -7,18 +7,26 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from '@/components/ui/menubar';
+import { FC } from 'react';
 
-const NavbarMenu = () => {
+interface NavbarMenuProps {
+  actions: {
+    save: () => void;
+    open: () => void;
+  };
+}
+
+const NavbarMenu: FC<NavbarMenuProps> = ({ actions }) => {
   return (
     <Menubar>
       <MenubarMenu>
         <MenubarTrigger>File</MenubarTrigger>
         <MenubarContent>
-          <MenubarItem>
-            Save file <MenubarShortcut>⌘S</MenubarShortcut>
+          <MenubarItem onClick={actions.save}>
+            Download program <MenubarShortcut>⌘S</MenubarShortcut>
           </MenubarItem>
-          <MenubarItem>
-            Open file <MenubarShortcut>⌘O</MenubarShortcut>
+          <MenubarItem onClick={actions.open}>
+            Load program <MenubarShortcut>⌘O</MenubarShortcut>
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
