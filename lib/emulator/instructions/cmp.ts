@@ -34,12 +34,11 @@ class CmpInstruction extends Instruction {
       } else {
         operandValue = emulator.getRegister(this.operand);
       }
-
       const result = regValue - operandValue;
 
       emulator.setFlag('Z', result === 0);
       emulator.setFlag('N', result < 0);
-      emulator.setFlag('C', operandValue <= regValue);
+      emulator.setFlag('C', !(operandValue > regValue));
       emulator.setFlag('V', ((regValue ^ operandValue) & (regValue ^ result)) < 0);
     } catch (e) {
       if (!(e instanceof InvalidRegisterError)) {
