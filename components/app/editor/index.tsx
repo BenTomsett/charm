@@ -1,9 +1,8 @@
 'use client';
 
-// TODO: Fix `window is not defined` error when importing Range from monaco-editor
-import { editor, Range } from 'monaco-editor';
+import { editor } from 'monaco-editor';
 import Editor from '@monaco-editor/react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface MonacoEditorProps {
   editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>;
@@ -23,17 +22,19 @@ function MonacoEditor({
   nextLine,
 }: MonacoEditorProps) {
   const decorationsCollectionRef = useRef<editor.IEditorDecorationsCollection | null>(null);
+  const [monaco, setMonaco] = useState<typeof import('monaco-editor') | null>(null);
 
   const handleEditorDidMount = async (e: editor.IStandaloneCodeEditor) => {
     if (editorRef.current === null) {
       editorRef.current = e;
 
-      const monaco = await import('monaco-editor');
+      const m = await import('monaco-editor');
+      setMonaco(m);
 
       editorRef.current.addAction({
         id: 'execute',
         label: 'Run program',
-        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+        keybindings: [m.KeyMod.CtrlCmd | m.KeyCode.Enter],
         run: onExecute,
       });
 
@@ -42,12 +43,12 @@ function MonacoEditor({
   };
 
   useEffect(() => {
-    if (editorRef.current !== null && decorationsCollectionRef.current) {
+    if (editorRef.current !== null && decorationsCollectionRef.current && monaco) {
       const decorations: editor.IModelDeltaDecoration[] = [];
 
       if (currentLine !== undefined) {
         decorations.push({
-          range: new Range(currentLine, 1, currentLine, 1),
+          range: new monaco!.Range(currentLine, 1, currentLine, 1),
           options: {
             isWholeLine: true,
             className: 'bg-orange-300',
@@ -57,7 +58,7 @@ function MonacoEditor({
 
       if (nextLine !== undefined) {
         decorations.push({
-          range: new Range(nextLine, 1, nextLine, 1),
+          range: new monaco!.Range(nextLine, 1, nextLine, 1),
           options: {
             isWholeLine: true,
             className: 'bg-orange-100',
