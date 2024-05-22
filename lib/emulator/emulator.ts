@@ -12,6 +12,8 @@ export interface EmulatorState {
   memory: Uint8Array;
   flags: { N: boolean; Z: boolean; C: boolean; V: boolean };
   symbols: Map<string, { address: number; lineIndex: number }>;
+  currentLine?: number;
+  nextLine?: number;
 }
 
 export const defaultEmulatorState = {
@@ -42,6 +44,9 @@ class Emulator {
   private states: EmulatorState[];
   private currentState: number;
 
+  private currentLine: number | undefined;
+  private nextLine: number | undefined;
+
   private listeners: (() => void)[];
 
   constructor() {
@@ -59,6 +64,8 @@ class Emulator {
     this.instructions = [];
     this.states = [this.getEmulatorState()];
     this.currentState = 0;
+    this.currentLine = undefined;
+    this.nextLine = undefined;
 
     if (notify) {
       this.notify();
@@ -72,6 +79,8 @@ class Emulator {
       memory: this.memory,
       flags: this.flags,
       symbols: this.symbols,
+      currentLine: this.currentLine,
+      nextLine: this.nextLine,
     };
   }
 
@@ -80,12 +89,13 @@ class Emulator {
     this.memory = new Uint8Array(state.memory);
     this.flags = { ...state.flags };
     this.symbols = new Map(state.symbols);
+    this.currentLine = state.currentLine;
+    this.nextLine = state.nextLine;
 
     this.notify();
   }
 
   preprocessProgram(program: string) {
-    console.log('Preprocessing program');
     this.reset(false);
 
     // The memory address to which symbols/instructions will be stored
@@ -115,7 +125,7 @@ class Emulator {
           instruction,
           address: currentMemoryAddress,
           line: sanitizedLine,
-          lineIndex: index,
+          lineIndex: index + 1,
         });
         currentMemoryAddress += 4;
       } else {
@@ -165,10 +175,19 @@ class Emulator {
       return false;
     }
 
+    this.setCurrentLine(processedInstruction.lineIndex);
+
     processedInstruction.instruction.execute(this);
 
     if (!processedInstruction.instruction.setsProgramCounter) {
       this.setRegister('R15', pc + 4);
+    }
+
+    const nextLine = this.instructions.find((i) => i.address === this.getRegister('R15'));
+    if (nextLine) {
+      this.setNextLine(nextLine.lineIndex);
+    } else {
+      this.setNextLine(undefined);
     }
 
     this.states.push(this.getEmulatorState());
@@ -186,6 +205,16 @@ class Emulator {
     } else {
       return false;
     }
+  }
+
+  setCurrentLine(line: number | undefined) {
+    this.currentLine = line;
+    this.notify();
+  }
+
+  setNextLine(line: number | undefined) {
+    this.nextLine = line;
+    this.notify();
   }
 
   // Returns the value of a register
@@ -209,7 +238,6 @@ class Emulator {
 
     this.registers = { ...this.registers, [register]: value };
 
-    console.log('Register updated:', { register, value });
     this.notify();
   }
 
@@ -242,7 +270,6 @@ class Emulator {
     this.memory[address + 2] = (value >> 16) & 0xff;
     this.memory[address + 3] = (value >> 24) & 0xff;
 
-    console.log('Memory updated:', { address, value });
     this.notify();
   }
 
@@ -263,7 +290,6 @@ class Emulator {
 
     this.flags = { ...this.flags, [flag]: value };
 
-    console.log('Flag updated:', { flag, value });
     this.notify();
   }
 

@@ -41,6 +41,8 @@ export default function Home() {
   const [memory, setMemory] = useState(emulator.getEmulatorState().memory);
   const [flags, setFlags] = useState(emulator.getEmulatorState().flags);
   const [symbols, setSymbols] = useState(emulator.getEmulatorState().symbols);
+  const [currentLine, setCurrentLine] = useState<number | undefined>(undefined);
+  const [nextLine, setNextLine] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -49,6 +51,11 @@ export default function Home() {
       setMemory(state.memory);
       setFlags(state.flags);
       setSymbols(state.symbols);
+
+      setCurrentLine(state.currentLine);
+
+      console.log(state.nextLine);
+      setNextLine(state.nextLine);
     };
 
     emulator.subscribe(handleUpdate);
@@ -88,7 +95,11 @@ export default function Home() {
   };
 
   const onStepForward = () => {
-    if (status !== EmulatorStatus.Processed && status !== EmulatorStatus.Executing) {
+    if (
+      status !== EmulatorStatus.Processed &&
+      status !== EmulatorStatus.Executing &&
+      status !== EmulatorStatus.Executed
+    ) {
       if (!preprocess()) return;
     }
 
@@ -175,6 +186,8 @@ export default function Home() {
                 onExecute={onExecute}
                 executing={false}
                 onChange={onChange}
+                currentLine={currentLine}
+                nextLine={nextLine}
               />
             </div>
           </ResizablePanel>
