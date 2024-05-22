@@ -60,7 +60,7 @@ const NavbarMenu: FC<NavbarMenuProps> = ({ actions }) => {
       </Menubar>
 
       <DialogContent className="max-h-[90vh] w-full max-w-[90vw] overflow-auto">
-        <div className="prose prose-table:w-full prose-table:text-left flex max-w-none items-center justify-between p-4">
+        <div className="prose flex max-w-none items-center justify-between p-4 prose-table:w-full prose-table:text-left">
           <Markdown className="w-full" remarkPlugins={[remarkGfm]}>
             {markdownContent}
           </Markdown>

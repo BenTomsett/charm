@@ -10,7 +10,7 @@ export type DisplayBase = 'hex' | 'bin' | 'dec';
 export const formatValue = (base: DisplayBase, value: number): string => {
   switch (base) {
     case 'hex':
-      // Convert to 32-bit signed integer
+      // eslint-disable-next-line no-case-declarations
       const hexValue = (value >>> 0).toString(16).padStart(8, '0').toUpperCase();
       return `0x${hexValue}`;
     case 'bin':

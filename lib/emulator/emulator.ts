@@ -147,6 +147,7 @@ class Emulator {
     const executionLimit = 1000;
     let executionCount = 0;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       if (executionCount++ > executionLimit) {
         throw new InfiniteLoopError(executionLimit);
