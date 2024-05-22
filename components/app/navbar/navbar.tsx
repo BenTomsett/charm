@@ -97,9 +97,6 @@ const Navbar: FC<NavbarProps> = ({
               <TabsTrigger value="dec">Dec</TabsTrigger>
             </TabsList>
           </Tabs>
-          <TooltipButton variant="outline" size="icon" tooltipText="Send feedback">
-            <ThumbsUp className="h-4 w-4" />
-          </TooltipButton>
 
           <AboutDialog />
         </div>

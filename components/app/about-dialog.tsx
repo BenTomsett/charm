@@ -19,15 +19,13 @@ const AboutDialog = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>About chARM</DialogTitle>
-          <DialogDescription>
+          <div className="prose">
+            <h3>About chARM</h3>
             <p>
               chARM is a web-based visual emulator for the emulating simple ARM assembly programs.
               It is designed to be used as a teaching tool for students learning about computer
               architecture and assembly language programming.
             </p>
-
-            <br />
 
             <p>
               It supports a subset of the ARM Unified Assembler Language (UAL) and provides a visual
@@ -35,25 +33,18 @@ const AboutDialog = () => {
               step-through debugger.
             </p>
 
-            <br />
-
             <p>
               This project was developed using the Next.js framework and is written in TypeScript.
             </p>
 
-            <br />
-            <br />
-
-            <div className="rounded-md bg-slate-100 px-4 py-3">
-              <p>
-                chARM was developed by Ben Tomsett. The code is open-source and available on{' '}
-                <a className="text-black underline" href="/">
-                  GitHub
-                </a>
-                .
-              </p>
-            </div>
-          </DialogDescription>
+            <p>
+              chARM was developed by Ben Tomsett. The code is open-source and available on{' '}
+              <a className="text-black underline" href="/">
+                GitHub
+              </a>
+              .
+            </p>
+          </div>
         </DialogHeader>
       </DialogContent>
     </Dialog>
