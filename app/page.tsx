@@ -53,8 +53,6 @@ export default function Home() {
       setSymbols(state.symbols);
 
       setCurrentLine(state.currentLine);
-
-      console.log(state.nextLine);
       setNextLine(state.nextLine);
     };
 
@@ -127,7 +125,8 @@ export default function Home() {
   };
 
   const onChange = () => {
-    if (status === EmulatorStatus.Processed) {
+    if (status === EmulatorStatus.Processed || status === EmulatorStatus.Executed) {
+      emulator.reset();
       setStatus(EmulatorStatus.Ready);
     }
   };
@@ -184,7 +183,7 @@ export default function Home() {
               <MonacoEditor
                 editorRef={editorRef}
                 onExecute={onExecute}
-                executing={false}
+                executing={status === EmulatorStatus.Executing}
                 onChange={onChange}
                 currentLine={currentLine}
                 nextLine={nextLine}

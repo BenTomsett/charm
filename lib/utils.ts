@@ -11,7 +11,8 @@ export const formatValue = (base: DisplayBase, value: number): string => {
   switch (base) {
     case 'hex':
       // Convert to 32-bit signed integer
-      return `0x${(value >>> 0).toString(16).padStart(8, '0')}`.toUpperCase();
+      const hexValue = (value >>> 0).toString(16).padStart(8, '0').toUpperCase();
+      return `0x${hexValue}`;
     case 'bin':
       // Convert to 32-bit signed integer, and separate each byte with an underscore
       return `0b${(value >>> 0)

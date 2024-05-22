@@ -1,7 +1,9 @@
 import {
+  ArgumentError,
   InfiniteLoopError,
   InvalidMemoryError,
   InvalidRegisterError,
+  SyntaxError,
   UnalignedMemoryError,
 } from '@/lib/emulator/errors';
 import { createInstruction } from '@/lib/emulator/instruction-factory';
@@ -118,18 +120,23 @@ class Emulator {
         return;
       }
 
-      // Otherwise, treat it as an instruction
-      const instruction = createInstruction(sanitizedLine);
-      if (instruction) {
-        this.instructions.push({
-          instruction,
-          address: currentMemoryAddress,
-          line: sanitizedLine,
-          lineIndex: index + 1,
-        });
-        currentMemoryAddress += 4;
-      } else {
-        throw new SyntaxError(line);
+      try {
+        // Otherwise, treat it as an instruction
+        const instruction = createInstruction(sanitizedLine);
+        if (instruction) {
+          this.instructions.push({
+            instruction,
+            address: currentMemoryAddress,
+            line: sanitizedLine,
+            lineIndex: index + 1,
+          });
+          currentMemoryAddress += 4;
+        } else {
+          throw new SyntaxError(line);
+        }
+      } catch (e) {
+        e.message += ` (on line ${index + 1})`;
+        throw e;
       }
     });
 
