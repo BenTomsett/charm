@@ -30,19 +30,13 @@ class MovInstruction extends Instruction {
   execute(emulator: Emulator): void {
     let value = 0;
 
-    try {
-      if (this.src.startsWith('#')) {
-        value = parseImmediate(this.src);
-      } else {
-        value = emulator.getRegister(this.src);
-      }
-
-      emulator.setRegister(this.dest, value);
-    } catch (e) {
-      if (!(e instanceof InvalidRegisterError)) {
-        throw e;
-      }
+    if (this.src.startsWith('#')) {
+      value = parseImmediate(this.src);
+    } else {
+      value = emulator.getRegister(this.src);
     }
+
+    emulator.setRegister(this.dest, value);
 
     if (this.setFlags) {
       if (value & 0x80000000) emulator.setFlag('N', true);

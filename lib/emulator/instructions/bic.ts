@@ -32,16 +32,10 @@ class BicInstruction extends Instruction {
     const val1 = emulator.getRegister(this.src1);
     let val2 = 0;
 
-    try {
-      if (this.src2.startsWith('#')) {
-        val2 = parseImmediate(this.src2);
-      } else {
-        val2 = emulator.getRegister(this.src2);
-      }
-    } catch (e) {
-      if (!(e instanceof InvalidRegisterError)) {
-        throw e;
-      }
+    if (this.src2.startsWith('#')) {
+      val2 = parseImmediate(this.src2);
+    } else {
+      val2 = emulator.getRegister(this.src2);
     }
 
     const result = val1 & ~val2;

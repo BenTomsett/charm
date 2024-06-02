@@ -26,20 +26,14 @@ class RorInstruction extends Instruction {
   }
 
   execute(emulator: Emulator): void {
-    try {
-      const srcValue = emulator.getRegister(this.src);
-      const rotateValue = parseImmediate(this.rotateAmount);
-      const valueBits = 32;
+    const srcValue = emulator.getRegister(this.src);
+    const rotateValue = parseImmediate(this.rotateAmount);
+    const valueBits = 32;
 
-      const effectiveRotate = rotateValue % valueBits;
-      const result = (srcValue >>> effectiveRotate) | (srcValue << (valueBits - effectiveRotate));
+    const effectiveRotate = rotateValue % valueBits;
+    const result = (srcValue >>> effectiveRotate) | (srcValue << (valueBits - effectiveRotate));
 
-      emulator.setRegister(this.dest, result);
-    } catch (e) {
-      if (!(e instanceof InvalidRegisterError)) {
-        throw e;
-      }
-    }
+    emulator.setRegister(this.dest, result);
   }
 }
 

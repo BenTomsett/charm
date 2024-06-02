@@ -26,17 +26,11 @@ class AsrInstruction extends Instruction {
   }
 
   execute(emulator: Emulator): void {
-    try {
-      const srcValue = emulator.getRegister(this.src);
-      const shiftValue = parseImmediate(this.shiftAmount);
+    const srcValue = emulator.getRegister(this.src);
+    const shiftValue = parseImmediate(this.shiftAmount);
 
-      const result = srcValue >> shiftValue;
-      emulator.setRegister(this.dest, result);
-    } catch (e) {
-      if (!(e instanceof InvalidRegisterError)) {
-        throw e;
-      }
-    }
+    const result = srcValue >> shiftValue;
+    emulator.setRegister(this.dest, result);
   }
 }
 
