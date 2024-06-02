@@ -48,7 +48,7 @@ function MonacoEditor({
     if (editorRef.current !== null && decorationsCollectionRef.current && monaco) {
       const decorations: editor.IModelDeltaDecoration[] = [];
 
-      if (error) {
+      if (error && currentLine !== undefined) {
         decorations.push({
           range: new monaco!.Range(currentLine, 1, currentLine, 1),
           options: {
@@ -83,7 +83,11 @@ function MonacoEditor({
   }, [error, currentLine, nextLine]);
 
   return (
-    <Editor onMount={handleEditorDidMount} options={{ readOnly: executing }} onChange={onChange} />
+    <Editor
+      onMount={handleEditorDidMount}
+      options={{ readOnly: executing, fontSize: 14 }}
+      onChange={onChange}
+    />
   );
 }
 
