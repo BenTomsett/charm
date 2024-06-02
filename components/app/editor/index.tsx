@@ -8,6 +8,7 @@ interface MonacoEditorProps {
   editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>;
   onExecute: () => void;
   executing: boolean;
+  error: boolean;
   onChange: (value: string) => void;
   currentLine?: number;
   nextLine?: number;
@@ -17,6 +18,7 @@ function MonacoEditor({
   editorRef,
   onExecute,
   executing,
+  error,
   onChange,
   currentLine,
   nextLine,
@@ -46,29 +48,39 @@ function MonacoEditor({
     if (editorRef.current !== null && decorationsCollectionRef.current && monaco) {
       const decorations: editor.IModelDeltaDecoration[] = [];
 
-      if (currentLine !== undefined) {
+      if (error) {
         decorations.push({
           range: new monaco!.Range(currentLine, 1, currentLine, 1),
           options: {
             isWholeLine: true,
-            className: 'bg-orange-300',
+            inlineClassName: 'errorLineDecoration',
           },
         });
-      }
+      } else {
+        if (currentLine !== undefined) {
+          decorations.push({
+            range: new monaco!.Range(currentLine, 1, currentLine, 1),
+            options: {
+              isWholeLine: true,
+              className: 'bg-orange-300',
+            },
+          });
+        }
 
-      if (nextLine !== undefined) {
-        decorations.push({
-          range: new monaco!.Range(nextLine, 1, nextLine, 1),
-          options: {
-            isWholeLine: true,
-            className: 'bg-orange-100',
-          },
-        });
+        if (nextLine !== undefined) {
+          decorations.push({
+            range: new monaco!.Range(nextLine, 1, nextLine, 1),
+            options: {
+              isWholeLine: true,
+              className: 'bg-orange-100',
+            },
+          });
+        }
       }
 
       decorationsCollectionRef.current.set(decorations);
     }
-  }, [currentLine, nextLine]);
+  }, [error, currentLine, nextLine]);
 
   return (
     <Editor onMount={handleEditorDidMount} options={{ readOnly: executing }} onChange={onChange} />

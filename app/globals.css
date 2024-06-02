@@ -91,3 +91,9 @@
 .flash-animation {
   animation: flash 1s;
 }
+
+.errorLineDecoration {
+  text-decoration: underline;
+  text-decoration-color: red;
+  text-decoration-style: wavy;
+}

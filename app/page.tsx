@@ -184,6 +184,7 @@ export default function Home() {
                 editorRef={editorRef}
                 onExecute={onExecute}
                 executing={status === EmulatorStatus.Executing}
+                error={status === EmulatorStatus.Error}
                 onChange={onChange}
                 currentLine={currentLine}
                 nextLine={nextLine}

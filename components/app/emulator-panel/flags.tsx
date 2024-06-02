@@ -1,7 +1,6 @@
 import { EmulatorState } from '@/lib/emulator/emulator';
 import { FC, useEffect, useState } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { formatValue } from '@/lib/utils';
 
 export interface FlagsProps {
   flags: EmulatorState['flags'];

@@ -161,6 +161,8 @@ class Emulator {
         break;
       }
 
+      this.setCurrentLine(processedInstruction.lineIndex);
+
       processedInstruction.instruction.execute(this);
 
       if (!processedInstruction.instruction.setsProgramCounter) {
