@@ -17,15 +17,13 @@ interface MemoryProps {
 
 const Memory: FC<MemoryProps> = ({ memory, displayBase }) => {
   const memoryEntries: React.JSX.Element[] = [];
-  for (let i = 0; i < memory.length; i++) {
-    if (memory[i] !== 0) {
-      memoryEntries.push(
-        <TableRow key={`mem-${i}`}>
-          <TableCell className="font-bold">{`0x${i.toString(16).toUpperCase().padStart(4, '0')}`}</TableCell>
-          <TableCell>{formatValue(displayBase, memory[i])}</TableCell>
-        </TableRow>
-      );
-    }
+  for (const [address, value] of memory.entries()) {
+    memoryEntries.push(
+      <TableRow key={`mem-${address}`}>
+        <TableCell className="font-bold">{`0x${address.toString(16).toUpperCase().padStart(4, '0')}`}</TableCell>
+        <TableCell>{formatValue(displayBase, value)}</TableCell>
+      </TableRow>
+    );
   }
 
   return (

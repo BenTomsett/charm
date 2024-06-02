@@ -11,7 +11,7 @@ import Instruction from '@/lib/emulator/instruction';
 
 export interface EmulatorState {
   registers: Record<string, number>;
-  memory: Uint8Array;
+  memory: Map<number, number>;
   flags: { N: boolean; Z: boolean; C: boolean; V: boolean };
   symbols: Map<string, { address: number; lineIndex: number }>;
   currentLine?: number;
@@ -23,7 +23,7 @@ export const defaultEmulatorState = {
     (acc, curr) => ({ ...acc, [curr]: 0 }),
     {}
   ),
-  memory: new Uint8Array(1024),
+  memory: new Map<number, number>(),
   flags: { N: false, Z: false, C: false, V: false },
   symbols: new Map(),
 };
@@ -59,7 +59,7 @@ class Emulator {
 
   reset(notify: boolean = true) {
     this.registers = { ...defaultEmulatorState.registers };
-    this.memory = new Uint8Array(defaultEmulatorState.memory);
+    this.memory = new Map(defaultEmulatorState.memory);
     this.flags = { ...defaultEmulatorState.flags };
     this.symbols = new Map(defaultEmulatorState.symbols);
 
@@ -88,7 +88,7 @@ class Emulator {
 
   setEmulatorState(state: EmulatorState) {
     this.registers = { ...state.registers };
-    this.memory = new Uint8Array(state.memory);
+    this.memory = new Map(state.memory);
     this.flags = { ...state.flags };
     this.symbols = new Map(state.symbols);
     this.currentLine = state.currentLine;
@@ -256,29 +256,18 @@ class Emulator {
 
   // Returns the value at a memory address
   getMemory(address: number) {
-    if (address < 0 || address >= this.memory.length) {
-      throw new InvalidMemoryError(address);
+    if (address % 4 !== 0) {
+      throw new UnalignedMemoryError(address);
     }
-
-    return this.memory[address];
+    return this.memory.get(address) || 0;
   }
 
   // Sets the value at a memory address
   setMemory(address: number, value: number) {
-    if (address < 0 || address >= this.memory.length) {
-      throw new InvalidMemoryError(address);
-    }
-
     if (address % 4 !== 0) {
       throw new UnalignedMemoryError(address);
     }
-
-    this.memory[address] = value & 0xff;
-    this.memory[address + 1] = (value >> 8) & 0xff;
-    this.memory[address + 2] = (value >> 16) & 0xff;
-    this.memory[address + 3] = (value >> 24) & 0xff;
-
-    this.notify();
+    this.memory.set(address, value);
   }
 
   // Returns the value of a flag
