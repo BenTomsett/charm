@@ -49,6 +49,7 @@ function MonacoEditor({
       });
       monaco.languages.registerCompletionItemProvider('arm-asm', {
         provideCompletionItems: (model, position) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const suggestions: any[] = [];
           const word = model.getWordUntilPosition(position);
           const range = {
