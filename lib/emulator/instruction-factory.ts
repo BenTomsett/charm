@@ -87,6 +87,8 @@ const instructionLookup: { [key: string]: InstructionFactory } = {
   [SubInstruction.opcode + 'S']: SubInstruction.create,
 };
 
+export const opcodes = Object.keys(instructionLookup);
+
 export const createInstruction = (line: string): Instruction | null => {
   const parts = line.trim().split(/\s+/);
   const opcode = parts[0].toUpperCase();
