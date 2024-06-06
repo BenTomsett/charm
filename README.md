@@ -30,3 +30,10 @@ To run chARM in a local environment, follow these instructions. You'll need to h
     ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your web browser.
+
+### Running tests
+chARM uses Jest for automated unit and integration tests.
+To run these tests, use the following command:
+```bash
+yarn test
+```
