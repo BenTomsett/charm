@@ -39,7 +39,7 @@ const AboutDialog = () => {
 
             <p>
               chARM was developed by Ben Tomsett. The code is open-source and available on{' '}
-              <a className="text-black underline" href="/">
+              <a className="text-black underline" href="https://github.com/BenTomsett/charm">
                 GitHub
               </a>
               .

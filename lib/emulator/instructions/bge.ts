@@ -26,7 +26,6 @@ class BgeInstruction extends Instruction {
     const nFlag = emulator.getFlag('N');
     const vFlag = emulator.getFlag('V');
 
-    // Branch if Negative flag is equal to Overflow flag
     if (nFlag === vFlag) {
       const symbol = emulator.getSymbol(this.label);
 
