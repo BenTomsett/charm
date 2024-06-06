@@ -5,7 +5,7 @@ import { ArgumentError, InvalidRegisterError } from '@/lib/emulator/errors';
 
 class AsrInstruction extends Instruction {
   static opcode = 'ASR';
-  static argCount = 2;
+  static argCount = 3;
 
   constructor(
     public dest: string,

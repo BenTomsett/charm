@@ -297,6 +297,11 @@ class Emulator {
     return this.symbols.get(symbol);
   }
 
+  // Sets the value of a symbol
+  setSymbol(symbol: string, value: { address: number; lineIndex: number }) {
+    this.symbols.set(symbol, value);
+  }
+
   subscribe(callback) {
     this.listeners.push(callback);
   }

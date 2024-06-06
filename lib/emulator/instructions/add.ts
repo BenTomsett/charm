@@ -44,9 +44,15 @@ class AddInstruction extends Instruction {
     if (this.setFlags) {
       if (result === 0) emulator.setFlag('Z', true);
       if (result < 0) emulator.setFlag('N', true);
-      if (val1 >= val2) emulator.setFlag('C', true);
-      if ((val1 >= 0 && val2 < 0 && result < 0) || (val1 < 0 && val2 > 0 && result >= 0))
-        emulator.setFlag('V', true);
+
+      const bigVal1 = BigInt(val1);
+      const bigVal2 = BigInt(val2);
+      const bigResult = bigVal1 + bigVal2;
+
+      emulator.setFlag('C', bigResult > BigInt(0xffffffff));
+
+      const overflow = (val1 > 0 && val2 > 0 && result < 0) || (val1 < 0 && val2 < 0 && result > 0);
+      emulator.setFlag('V', overflow);
     }
   }
 }

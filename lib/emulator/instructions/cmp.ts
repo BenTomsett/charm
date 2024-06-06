@@ -25,20 +25,20 @@ class CmpInstruction extends Instruction {
   }
 
   execute(emulator: Emulator): void {
-    const regValue = emulator.getRegister(this.reg);
-    let operandValue: number;
+    const val1 = emulator.getRegister(this.reg);
+    let val2: number;
 
     if (this.operand.startsWith('#')) {
-      operandValue = parseImmediate(this.operand);
+      val2 = parseImmediate(this.operand);
     } else {
-      operandValue = emulator.getRegister(this.operand);
+      val2 = emulator.getRegister(this.operand);
     }
-    const result = regValue - operandValue;
+    const result = val1 - val2;
 
     emulator.setFlag('Z', result === 0);
     emulator.setFlag('N', result < 0);
-    emulator.setFlag('C', !(operandValue > regValue));
-    emulator.setFlag('V', ((regValue ^ operandValue) & (regValue ^ result)) < 0);
+    emulator.setFlag('C', !(val2 > val1));
+    emulator.setFlag('V', ((val1 ^ val2) & (val1 ^ result)) < 0);
   }
 }
 

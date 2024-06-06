@@ -5,7 +5,7 @@ import { ArgumentError, InvalidRegisterError } from '@/lib/emulator/errors';
 
 class LslInstruction extends Instruction {
   static opcode = 'LSL';
-  static argCount = 2;
+  static argCount = 3;
 
   constructor(
     public dest: string,

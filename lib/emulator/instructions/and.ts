@@ -42,8 +42,8 @@ class AndInstruction extends Instruction {
     emulator.setRegister(this.dest, result);
 
     if (this.setFlags) {
-      if (result & 0x80000000) emulator.setFlag('N', true);
-      if (result === 0) emulator.setFlag('Z', true);
+      emulator.setFlag('N', (result & 0x80000000) !== 0);
+      emulator.setFlag('Z', result === 0);
     }
   }
 }

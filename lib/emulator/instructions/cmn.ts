@@ -25,21 +25,24 @@ class CmnInstruction extends Instruction {
   }
 
   execute(emulator: Emulator): void {
-    const regValue = emulator.getRegister(this.reg);
-    let operandValue: number;
+    const val1 = emulator.getRegister(this.reg);
+    let val2: number;
 
     if (this.operand.startsWith('#')) {
-      operandValue = parseImmediate(this.operand);
+      val2 = parseImmediate(this.operand);
     } else {
-      operandValue = emulator.getRegister(this.operand);
+      val2 = emulator.getRegister(this.operand);
     }
 
-    const result = regValue + operandValue;
+    const result = val1 + val2;
+
+    const unsignedOverflow = val1 > 0xffffffff - val2;
+    const signedOverflow = ((val1 ^ result) & (val2 ^ result)) < 0;
 
     emulator.setFlag('Z', result === 0);
     emulator.setFlag('N', result < 0);
-    emulator.setFlag('C', operandValue <= 0xffffffff - regValue);
-    emulator.setFlag('V', ((regValue ^ operandValue) & (result ^ regValue)) < 0);
+    emulator.setFlag('C', unsignedOverflow);
+    emulator.setFlag('V', signedOverflow);
   }
 }
 

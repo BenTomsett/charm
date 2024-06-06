@@ -39,6 +39,8 @@ class StrInstruction extends Instruction {
 
     if (typeof this.offset === 'number') {
       address += this.offset;
+    } else if (parseInt(this.offset, 10)) {
+      address += parseInt(this.offset, 10);
     } else {
       const offsetValue = emulator.getRegister(this.offset);
       address += offsetValue;
